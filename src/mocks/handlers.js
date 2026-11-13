@@ -89,6 +89,30 @@ const users = [
     role: 'developer',
     token: 'mock-token-developer',
   },
+  {
+    id: 4,
+    name: 'Budi Santoso',
+    email: 'budi@eventhub.test',
+    password: 'password123',
+    role: 'peserta',
+    token: 'mock-token-budi',
+  },
+  {
+    id: 5,
+    name: 'Siti Aminah',
+    email: 'siti@eventhub.test',
+    password: 'password123',
+    role: 'peserta',
+    token: 'mock-token-siti',
+  },
+  {
+    id: 6,
+    name: 'Panitia Himpunan Mahasiswa',
+    email: 'panitia2@eventhub.test',
+    password: 'password123',
+    role: 'panitia',
+    token: 'mock-token-panitia2',
+  },
 ]
 
 function getUserFromRequest(request) {
@@ -146,22 +170,22 @@ function authorize(request, allowedRoles = []) {
 // -----------------------------------------------------------------------------
 
 const categories = [
-  { id: 1, name: 'Seminar', description: 'Acara seminar' },
-  { id: 2, name: 'Workshop', description: 'Acara pelatihan' },
-  { id: 3, name: 'Lomba', description: 'Kompetisi dan perlombaan' },
-  { id: 4, name: 'Kepanitiaan', description: 'Kegiatan kepanitiaan' },
-  { id: 5, name: 'Komunitas', description: 'Kegiatan komunitas' },
+  { id: 1, name: 'Seminar', description: 'Acara seminar dan webinar akademis/profesional' },
+  { id: 2, name: 'Workshop', description: 'Pelatihan dan lokakarya teknis hands-on' },
+  { id: 3, name: 'Lomba', description: 'Kompetisi, hackathon, dan perlombaan' },
+  { id: 4, name: 'Kepanitiaan', description: 'Open recruitment dan kegiatan kepanitiaan' },
+  { id: 5, name: 'Komunitas', description: 'Meetup, sharing session, dan gathering komunitas' },
 ]
 
 const events = [
+  // 1. Tayang (Aktif, sisa kuota aman)
   {
     id: 1,
     created_by: 2,
     category_id: 1,
     title: 'Seminar Teknologi Informasi 2026',
-    description:
-      'Seminar perkembangan teknologi informasi dan kecerdasan buatan.',
-    poster_url: 'https://placehold.co/600x400?text=Seminar+TI',
+    description: 'Seminar perkembangan teknologi informasi, cloud, dan kecerdasan buatan.',
+    poster_url: 'https://placehold.co/600x400?text=Seminar+TI+2026',
     location: 'Auditorium UNS, Surakarta',
     start_time: '2026-11-20T09:00:00+07:00',
     end_time: '2026-11-20T15:00:00+07:00',
@@ -176,15 +200,15 @@ const events = [
     created_at: '2026-11-09T08:00:00+07:00',
     updated_at: '2026-11-10T08:00:00+07:00',
   },
+  // 2. Tayang (KUOTA HABIS / remaining_quota = 0, BR-01)
   {
     id: 2,
     created_by: 2,
     category_id: 2,
-    title: 'Web Development Workshop',
-    description:
-      'Workshop pengembangan aplikasi web menggunakan Vue dan Laravel.',
-    poster_url: 'https://placehold.co/600x400?text=Web+Development',
-    location: 'Gedung Sekolah Vokasi UNS',
+    title: 'Web Development Workshop (Vue & Laravel)',
+    description: 'Workshop intensif pengembangan aplikasi web menggunakan Vue 3 dan Laravel 12.',
+    poster_url: 'https://placehold.co/600x400?text=Workshop+Web+Full',
+    location: 'Gedung Sekolah Vokasi UNS, Surakarta',
     start_time: '2026-11-25T08:00:00+07:00',
     end_time: '2026-11-25T16:00:00+07:00',
     quota: 50,
@@ -198,26 +222,247 @@ const events = [
     created_at: '2026-11-09T09:00:00+07:00',
     updated_at: '2026-11-10T09:00:00+07:00',
   },
+  // 3. Tayang (Selesai / Tanggal Lampau, K-19)
   {
     id: 3,
     created_by: 2,
     category_id: 3,
-    title: 'UI UX Design Competition',
-    description: 'Kompetisi desain antarmuka aplikasi.',
-    poster_url: 'https://placehold.co/600x400?text=UI+UX',
-    location: 'Surakarta',
-    start_time: '2026-12-05T09:00:00+07:00',
-    end_time: '2026-12-05T17:00:00+07:00',
+    title: 'UI/UX Design Competition 2026',
+    description: 'Kompetisi desain antarmuka dan pengalaman pengguna tingkat nasional.',
+    poster_url: 'https://placehold.co/600x400?text=UI+UX+Competition',
+    location: 'Surakarta (Online & Offline)',
+    start_time: '2026-11-01T08:00:00+07:00',
+    end_time: '2026-11-01T17:00:00+07:00',
     quota: 80,
-    remaining_quota: 30,
+    remaining_quota: 10,
     status: 'tayang',
     payment_deadline: null,
     reject_reason: null,
     reviewed_by: 3,
-    reviewed_at: '2026-11-10T10:00:00+07:00',
-    published_at: '2026-11-10T10:00:00+07:00',
-    created_at: '2026-11-09T10:00:00+07:00',
-    updated_at: '2026-11-10T10:00:00+07:00',
+    reviewed_at: '2026-10-28T10:00:00+07:00',
+    published_at: '2026-10-28T10:00:00+07:00',
+    created_at: '2026-10-27T10:00:00+07:00',
+    updated_at: '2026-10-28T10:00:00+07:00',
+  },
+  // 4. Tayang (National Tech Summit)
+  {
+    id: 4,
+    created_by: 6,
+    category_id: 1,
+    title: 'National Technology Summit 2026',
+    description: 'Konferensi teknologi tahunan menghadirkan praktisi industri digital.',
+    poster_url: 'https://placehold.co/600x400?text=Tech+Summit+2026',
+    location: 'Grand Ballroom Solo, Surakarta',
+    start_time: '2026-12-05T08:30:00+07:00',
+    end_time: '2026-12-05T16:30:00+07:00',
+    quota: 200,
+    remaining_quota: 140,
+    status: 'tayang',
+    payment_deadline: null,
+    reject_reason: null,
+    reviewed_by: 3,
+    reviewed_at: '2026-11-10T11:00:00+07:00',
+    published_at: '2026-11-10T11:00:00+07:00',
+    created_at: '2026-11-09T11:00:00+07:00',
+    updated_at: '2026-11-10T11:00:00+07:00',
+  },
+  // 5. Tayang (Data Science Intensive Bootcamp)
+  {
+    id: 5,
+    created_by: 6,
+    category_id: 2,
+    title: 'Data Science Intensive Bootcamp',
+    description: 'Bootcamp 3 hari menguasai analisis data, visualisasi, dan machine learning praktis.',
+    poster_url: 'https://placehold.co/600x400?text=Data+Science+Bootcamp',
+    location: 'Lab Komputasi FMIPA UNS, Surakarta',
+    start_time: '2026-12-12T09:00:00+07:00',
+    end_time: '2026-12-14T17:00:00+07:00',
+    quota: 30,
+    remaining_quota: 12,
+    status: 'tayang',
+    payment_deadline: null,
+    reject_reason: null,
+    reviewed_by: 3,
+    reviewed_at: '2026-11-11T10:00:00+07:00',
+    published_at: '2026-11-11T10:00:00+07:00',
+    created_at: '2026-11-10T09:00:00+07:00',
+    updated_at: '2026-11-11T10:00:00+07:00',
+  },
+  // 6. Tayang (Game Development Hackathon)
+  {
+    id: 6,
+    created_by: 2,
+    category_id: 3,
+    title: '24-Hour Game Development Hackathon',
+    description: 'Kompetisi membuat game 2D/3D bertema kearifan lokal dalam 24 jam.',
+    poster_url: 'https://placehold.co/600x400?text=Game+Hackathon',
+    location: 'Gedung Haris UNS, Surakarta',
+    start_time: '2026-12-18T08:00:00+07:00',
+    end_time: '2026-12-19T20:00:00+07:00',
+    quota: 60,
+    remaining_quota: 25,
+    status: 'tayang',
+    payment_deadline: null,
+    reject_reason: null,
+    reviewed_by: 3,
+    reviewed_at: '2026-11-11T13:00:00+07:00',
+    published_at: '2026-11-11T13:00:00+07:00',
+    created_at: '2026-11-10T11:00:00+07:00',
+    updated_at: '2026-11-11T13:00:00+07:00',
+  },
+  // 7. Tayang (Cyber Security Meetup)
+  {
+    id: 7,
+    created_by: 2,
+    category_id: 5,
+    title: 'Cyber Security & Ethical Hacking Meetup',
+    description: 'Sharing session seputar keamanan siber, bug bounty, dan defensif security.',
+    poster_url: 'https://placehold.co/600x400?text=Cyber+Security',
+    location: 'Ruang Kolaborasi Lantai 2 Solo Techno Park',
+    start_time: '2026-11-28T13:00:00+07:00',
+    end_time: '2026-11-28T17:00:00+07:00',
+    quota: 75,
+    remaining_quota: 45,
+    status: 'tayang',
+    payment_deadline: null,
+    reject_reason: null,
+    reviewed_by: 3,
+    reviewed_at: '2026-11-12T08:00:00+07:00',
+    published_at: '2026-11-12T08:00:00+07:00',
+    created_at: '2026-11-11T08:00:00+07:00',
+    updated_at: '2026-11-12T08:00:00+07:00',
+  },
+  // 8. Tayang (Festival Seni Kampus)
+  {
+    id: 8,
+    created_by: 6,
+    category_id: 4,
+    title: 'Festival Seni & Budaya Kampus 2026',
+    description: 'Pergelaran pentas seni musik, teater, dan pameran karya visual mahasiswa.',
+    poster_url: 'https://placehold.co/600x400?text=Festival+Seni',
+    location: 'Halaman Gedung Rektorat UNS, Surakarta',
+    start_time: '2026-12-02T10:00:00+07:00',
+    end_time: '2026-12-03T21:00:00+07:00',
+    quota: 120,
+    remaining_quota: 85,
+    status: 'tayang',
+    payment_deadline: null,
+    reject_reason: null,
+    reviewed_by: 3,
+    reviewed_at: '2026-11-12T10:00:00+07:00',
+    published_at: '2026-11-12T10:00:00+07:00',
+    created_at: '2026-11-11T10:00:00+07:00',
+    updated_at: '2026-11-12T10:00:00+07:00',
+  },
+  // 9. Menunggu Review (Antrean review Developer /admin/review)
+  {
+    id: 9,
+    created_by: 2,
+    category_id: 4,
+    title: 'Open Recruitment Panitia Dies Natalis 2026',
+    description: 'Pendaftaran panitia mahasiswa untuk rangkaian perayaan Dies Natalis kampus.',
+    poster_url: 'https://placehold.co/600x400?text=Oprec+Dies+Natalis',
+    location: 'Student Center UNS, Surakarta',
+    start_time: '2026-12-01T09:00:00+07:00',
+    end_time: '2026-12-02T17:00:00+07:00',
+    quota: 150,
+    remaining_quota: 150,
+    status: 'menunggu_review',
+    payment_deadline: null,
+    reject_reason: null,
+    reviewed_by: null,
+    reviewed_at: null,
+    published_at: null,
+    created_at: '2026-11-12T10:00:00+07:00',
+    updated_at: '2026-11-12T11:00:00+07:00',
+  },
+  // 10. Menunggu Review (Antrean review Developer kedua)
+  {
+    id: 10,
+    created_by: 6,
+    category_id: 2,
+    title: 'Pelatihan Public Speaking & Pitching Mahasiswa',
+    description: 'Pelatihan teknik komunikasi percaya diri dan presentasi ide bisnis rintisan.',
+    poster_url: 'https://placehold.co/600x400?text=Public+Speaking',
+    location: 'Ruang Seminar LPPM UNS, Surakarta',
+    start_time: '2026-12-08T09:00:00+07:00',
+    end_time: '2026-12-08T15:00:00+07:00',
+    quota: 50,
+    remaining_quota: 50,
+    status: 'menunggu_review',
+    payment_deadline: null,
+    reject_reason: null,
+    reviewed_by: null,
+    reviewed_at: null,
+    published_at: null,
+    created_at: '2026-11-13T08:30:00+07:00',
+    updated_at: '2026-11-13T09:00:00+07:00',
+  },
+  // 11. Ditolak (Memuat alasan penolakan BR-13, K-15)
+  {
+    id: 11,
+    created_by: 2,
+    category_id: 5,
+    title: 'Gathering Komunitas Game Liar Solo',
+    description: 'Kumpul komunitas gaming santai akhir pekan di warung kopi.',
+    poster_url: 'https://placehold.co/600x400?text=Event+Ditolak',
+    location: 'Warkop Area Manahan, Surakarta',
+    start_time: '2026-11-30T10:00:00+07:00',
+    end_time: '2026-11-30T18:00:00+07:00',
+    quota: 30,
+    remaining_quota: 30,
+    status: 'ditolak',
+    payment_deadline: null,
+    reject_reason: 'Deskripsi acara tidak jelas dan lokasi tidak memenuhi syarat perizinan kampus.',
+    reviewed_by: 3,
+    reviewed_at: '2026-11-11T14:00:00+07:00',
+    published_at: null,
+    created_at: '2026-11-11T09:00:00+07:00',
+    updated_at: '2026-11-11T14:00:00+07:00',
+  },
+  // 12. Draft Aktif (Timer 24 jam berjalan, K-16, BR-08)
+  {
+    id: 12,
+    created_by: 2,
+    category_id: 2,
+    title: 'Workshop Cloud Native & Kubernetes Essentials',
+    description: 'Praktik arsitektur microservices dan orchestrasi container menggunakan Kubernetes.',
+    poster_url: 'https://placehold.co/600x400?text=Workshop+Kubernetes',
+    location: 'Lab Jaringan Komputer UNS',
+    start_time: '2026-12-10T09:00:00+07:00',
+    end_time: '2026-12-10T16:00:00+07:00',
+    quota: 40,
+    remaining_quota: 40,
+    status: 'draft',
+    payment_deadline: new Date(Date.now() + 20 * 60 * 60 * 1000).toISOString(),
+    reject_reason: null,
+    reviewed_by: null,
+    reviewed_at: null,
+    published_at: null,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+  // 13. Draft Kedaluwarsa (Untuk demo purge draft Q7 / Bab 14)
+  {
+    id: 13,
+    created_by: 2,
+    category_id: 1,
+    title: 'Seminar Bisnis Digital Mahasiswa (Draft Expired)',
+    description: 'Draft seminar yang tidak dibayar selama 24 jam dan siap dibersihkan oleh purge scheduler.',
+    poster_url: 'https://placehold.co/600x400?text=Expired+Draft',
+    location: 'Ruang Teater UNS',
+    start_time: '2026-12-15T09:00:00+07:00',
+    end_time: '2026-12-15T15:00:00+07:00',
+    quota: 100,
+    remaining_quota: 100,
+    status: 'draft',
+    payment_deadline: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+    reject_reason: null,
+    reviewed_by: null,
+    reviewed_at: null,
+    published_at: null,
+    created_at: new Date(Date.now() - 26 * 60 * 60 * 1000).toISOString(),
+    updated_at: new Date(Date.now() - 26 * 60 * 60 * 1000).toISOString(),
   },
 ]
 
@@ -226,7 +471,7 @@ const eventFormFields = {
     {
       id: 11,
       event_id: 1,
-      label: 'Asal Universitas',
+      label: 'Asal Universitas / Instansi',
       field_type: 'text',
       options: null,
       is_required: true,
@@ -235,7 +480,7 @@ const eventFormFields = {
     {
       id: 12,
       event_id: 1,
-      label: 'Nomor WhatsApp',
+      label: 'Nomor WhatsApp Aktif',
       field_type: 'text',
       options: null,
       is_required: true,
@@ -246,7 +491,7 @@ const eventFormFields = {
     {
       id: 21,
       event_id: 2,
-      label: 'Asal Universitas',
+      label: 'Asal Kampus / Program Studi',
       field_type: 'text',
       options: null,
       is_required: true,
@@ -255,31 +500,455 @@ const eventFormFields = {
     {
       id: 22,
       event_id: 2,
-      label: 'Ukuran Kaos',
+      label: 'Ukuran Kaos Peserta',
       field_type: 'dropdown',
-      options: ['S', 'M', 'L', 'XL'],
+      options: ['S', 'M', 'L', 'XL', 'XXL'],
       is_required: true,
       sort_order: 2,
     },
   ],
-  3: [],
+  3: [
+    {
+      id: 31,
+      event_id: 3,
+      label: 'Nama Tim Desain',
+      field_type: 'text',
+      options: null,
+      is_required: true,
+      sort_order: 1,
+    },
+    {
+      id: 32,
+      event_id: 3,
+      label: 'Jumlah Anggota Tim',
+      field_type: 'number',
+      options: null,
+      is_required: true,
+      sort_order: 2,
+    },
+  ],
+  4: [
+    {
+      id: 41,
+      event_id: 4,
+      label: 'Kategori Peserta',
+      field_type: 'dropdown',
+      options: ['Mahasiswa', 'Akademisi / Dosen', 'Praktisi Industri', 'Umum'],
+      is_required: true,
+      sort_order: 1,
+    },
+    {
+      id: 42,
+      event_id: 4,
+      label: 'Nama Institusi / Perusahaan',
+      field_type: 'text',
+      options: null,
+      is_required: false,
+      sort_order: 2,
+    },
+  ],
+  5: [
+    {
+      id: 51,
+      event_id: 5,
+      label: 'Motivasi Mengikuti Bootcamp',
+      field_type: 'textarea',
+      options: null,
+      is_required: true,
+      sort_order: 1,
+    },
+    {
+      id: 52,
+      event_id: 5,
+      label: 'Tautan Portofolio / GitHub',
+      field_type: 'text',
+      options: null,
+      is_required: false,
+      sort_order: 2,
+    },
+  ],
+  9: [
+    {
+      id: 91,
+      event_id: 9,
+      label: 'Pilihan Divisi Kepanitiaan',
+      field_type: 'dropdown',
+      options: ['Acara', 'Humas & Sponsorship', 'Logistik', 'Dekorasi & Dokumentasi'],
+      is_required: true,
+      sort_order: 1,
+    },
+    {
+      id: 92,
+      event_id: 9,
+      label: 'Pengalaman Organisasi',
+      field_type: 'textarea',
+      options: null,
+      is_required: true,
+      sort_order: 2,
+    },
+  ],
+  10: [
+    {
+      id: 101,
+      event_id: 10,
+      label: 'Tujuan Mengikuti Pelatihan',
+      field_type: 'text',
+      options: null,
+      is_required: true,
+      sort_order: 1,
+    },
+  ],
+  12: [
+    {
+      id: 121,
+      event_id: 12,
+      label: 'Pengalaman Dasar Container / Docker',
+      field_type: 'dropdown',
+      options: ['Pemula (Belum Pernah)', 'Menengah (Pernah Pakai)', 'Mahir'],
+      is_required: true,
+      sort_order: 1,
+    },
+  ],
+  13: [],
 }
 
-const payments = []
-const registrations = []
-const registrationAnswers = []
-const notifications = []
+const payments = [
+  {
+    id: 1,
+    event_id: 1,
+    user_id: 2,
+    amount: 50000,
+    reference_no: 'TRX-20261109-001',
+    proof_url: 'https://placehold.co/600x800?text=Bukti+Transfer+001',
+    status: 'terverifikasi',
+    paid_at: '2026-11-09T08:30:00+07:00',
+    verified_at: '2026-11-10T08:00:00+07:00',
+  },
+  {
+    id: 2,
+    event_id: 2,
+    user_id: 2,
+    amount: 50000,
+    reference_no: 'TRX-20261109-002',
+    proof_url: 'https://placehold.co/600x800?text=Bukti+Transfer+002',
+    status: 'terverifikasi',
+    paid_at: '2026-11-09T09:30:00+07:00',
+    verified_at: '2026-11-10T09:00:00+07:00',
+  },
+  {
+    id: 3,
+    event_id: 3,
+    user_id: 2,
+    amount: 50000,
+    reference_no: 'TRX-20261027-003',
+    proof_url: 'https://placehold.co/600x800?text=Bukti+Transfer+003',
+    status: 'terverifikasi',
+    paid_at: '2026-10-27T10:30:00+07:00',
+    verified_at: '2026-10-28T10:00:00+07:00',
+  },
+  {
+    id: 4,
+    event_id: 4,
+    user_id: 6,
+    amount: 50000,
+    reference_no: 'TRX-20261109-004',
+    proof_url: 'https://placehold.co/600x800?text=Bukti+Transfer+004',
+    status: 'terverifikasi',
+    paid_at: '2026-11-09T11:30:00+07:00',
+    verified_at: '2026-11-10T11:00:00+07:00',
+  },
+  {
+    id: 5,
+    event_id: 5,
+    user_id: 6,
+    amount: 50000,
+    reference_no: 'TRX-20261110-005',
+    proof_url: 'https://placehold.co/600x800?text=Bukti+Transfer+005',
+    status: 'terverifikasi',
+    paid_at: '2026-11-10T09:30:00+07:00',
+    verified_at: '2026-11-11T10:00:00+07:00',
+  },
+  {
+    id: 6,
+    event_id: 6,
+    user_id: 2,
+    amount: 50000,
+    reference_no: 'TRX-20261110-006',
+    proof_url: 'https://placehold.co/600x800?text=Bukti+Transfer+006',
+    status: 'terverifikasi',
+    paid_at: '2026-11-10T11:30:00+07:00',
+    verified_at: '2026-11-11T13:00:00+07:00',
+  },
+  {
+    id: 7,
+    event_id: 7,
+    user_id: 2,
+    amount: 50000,
+    reference_no: 'TRX-20261111-007',
+    proof_url: 'https://placehold.co/600x800?text=Bukti+Transfer+007',
+    status: 'terverifikasi',
+    paid_at: '2026-11-11T08:30:00+07:00',
+    verified_at: '2026-11-12T08:00:00+07:00',
+  },
+  {
+    id: 8,
+    event_id: 8,
+    user_id: 6,
+    amount: 50000,
+    reference_no: 'TRX-20261111-008',
+    proof_url: 'https://placehold.co/600x800?text=Bukti+Transfer+008',
+    status: 'terverifikasi',
+    paid_at: '2026-11-11T10:30:00+07:00',
+    verified_at: '2026-11-12T10:00:00+07:00',
+  },
+  {
+    id: 9,
+    event_id: 9,
+    user_id: 2,
+    amount: 50000,
+    reference_no: 'TRX-20261112-009',
+    proof_url: 'https://placehold.co/600x800?text=Bukti+Transfer+009',
+    status: 'menunggu_verifikasi',
+    paid_at: '2026-11-12T11:00:00+07:00',
+    verified_at: null,
+  },
+  {
+    id: 10,
+    event_id: 10,
+    user_id: 6,
+    amount: 50000,
+    reference_no: 'TRX-20261113-010',
+    proof_url: 'https://placehold.co/600x800?text=Bukti+Transfer+010',
+    status: 'menunggu_verifikasi',
+    paid_at: '2026-11-13T09:00:00+07:00',
+    verified_at: null,
+  },
+  {
+    id: 11,
+    event_id: 11,
+    user_id: 2,
+    amount: 50000,
+    reference_no: 'TRX-20261111-011',
+    proof_url: 'https://placehold.co/600x800?text=Bukti+Transfer+011',
+    status: 'dikembalikan',
+    paid_at: '2026-11-11T09:30:00+07:00',
+    verified_at: '2026-11-11T14:00:00+07:00',
+  },
+]
+
+const registrations = [
+  {
+    id: 1,
+    user_id: 1,
+    event_id: 1,
+    status: 'registered',
+    ticket_code: 'EVT-1-K3M9QX2A',
+    registered_at: '2026-11-12T09:15:00+07:00',
+    checked_in_at: null,
+    checked_in_by: null,
+  },
+  {
+    id: 2,
+    user_id: 1,
+    event_id: 3,
+    status: 'attended',
+    ticket_code: 'EVT-3-P8L2ZW1Q',
+    registered_at: '2026-10-29T10:00:00+07:00',
+    checked_in_at: '2026-11-01T08:45:00+07:00',
+    checked_in_by: 2,
+  },
+  {
+    id: 3,
+    user_id: 4,
+    event_id: 1,
+    status: 'registered',
+    ticket_code: 'EVT-1-B7X4MN2P',
+    registered_at: '2026-11-12T11:00:00+07:00',
+    checked_in_at: null,
+    checked_in_by: null,
+  },
+  {
+    id: 4,
+    user_id: 5,
+    event_id: 1,
+    status: 'attended',
+    ticket_code: 'EVT-1-S9T1KL5R',
+    registered_at: '2026-11-12T14:20:00+07:00',
+    checked_in_at: '2026-11-13T09:00:00+07:00',
+    checked_in_by: 2,
+  },
+  {
+    id: 5,
+    user_id: 4,
+    event_id: 2,
+    status: 'registered',
+    ticket_code: 'EVT-2-W4J8VC3D',
+    registered_at: '2026-11-10T15:30:00+07:00',
+    checked_in_at: null,
+    checked_in_by: null,
+  },
+  {
+    id: 6,
+    user_id: 5,
+    event_id: 3,
+    status: 'attended',
+    ticket_code: 'EVT-3-C5N2TY8E',
+    registered_at: '2026-10-30T11:00:00+07:00',
+    checked_in_at: '2026-11-01T08:50:00+07:00',
+    checked_in_by: 2,
+  },
+]
+
+const registrationAnswers = [
+  {
+    id: 1,
+    registration_id: 1,
+    form_field_id: 11,
+    answer: 'Universitas Sebelas Maret',
+  },
+  {
+    id: 2,
+    registration_id: 1,
+    form_field_id: 12,
+    answer: '081234567890',
+  },
+  {
+    id: 3,
+    registration_id: 2,
+    form_field_id: 31,
+    answer: 'Tim Solopreneur Creative',
+  },
+  {
+    id: 4,
+    registration_id: 2,
+    form_field_id: 32,
+    answer: '3',
+  },
+  {
+    id: 5,
+    registration_id: 3,
+    form_field_id: 11,
+    answer: 'Universitas Indonesia',
+  },
+  {
+    id: 6,
+    registration_id: 3,
+    form_field_id: 12,
+    answer: '085678901234',
+  },
+  {
+    id: 7,
+    registration_id: 4,
+    form_field_id: 11,
+    answer: 'Institut Teknologi Bandung',
+  },
+  {
+    id: 8,
+    registration_id: 4,
+    form_field_id: 12,
+    answer: '089876543210',
+  },
+  {
+    id: 9,
+    registration_id: 5,
+    form_field_id: 21,
+    answer: 'D3 Teknik Informatika UNS',
+  },
+  {
+    id: 10,
+    registration_id: 5,
+    form_field_id: 22,
+    answer: 'L',
+  },
+  {
+    id: 11,
+    registration_id: 6,
+    form_field_id: 31,
+    answer: 'PixelCraft Studio',
+  },
+  {
+    id: 12,
+    registration_id: 6,
+    form_field_id: 32,
+    answer: '2',
+  },
+]
+
+const notifications = [
+  {
+    id: 1,
+    user_id: 2,
+    title: 'Event Disetujui & Tayang',
+    message: 'Event "Seminar Teknologi Informasi 2026" telah disetujui Developer dan sedang tayang.',
+    is_read: false,
+    created_at: '2026-11-10T08:00:00+07:00',
+  },
+  {
+    id: 2,
+    user_id: 2,
+    title: 'Event Disetujui & Tayang',
+    message: 'Event "Web Development Workshop" telah disetujui Developer dan sedang tayang.',
+    is_read: true,
+    created_at: '2026-11-10T09:00:00+07:00',
+  },
+  {
+    id: 3,
+    user_id: 2,
+    title: 'Pengajuan Event Ditolak',
+    message: 'Event "Gathering Komunitas Game Liar Solo" ditolak: Deskripsi acara tidak jelas dan lokasi tidak memenuhi syarat perizinan kampus.',
+    is_read: false,
+    created_at: '2026-11-11T14:00:00+07:00',
+  },
+  {
+    id: 4,
+    user_id: 2,
+    title: 'Pembayaran Sewa Diterima',
+    message: 'Pembayaran sewa penayangan Rp 50.000 untuk event #1 telah terverifikasi oleh Developer.',
+    is_read: true,
+    created_at: '2026-11-10T08:00:00+07:00',
+  },
+  {
+    id: 5,
+    user_id: 1,
+    title: 'Pendaftaran Berhasil',
+    message: 'Pendaftaran Anda di "Seminar Teknologi Informasi 2026" berhasil. Kode tiket: EVT-1-K3M9QX2A.',
+    is_read: false,
+    created_at: '2026-11-12T09:15:00+07:00',
+  },
+  {
+    id: 6,
+    user_id: 1,
+    title: 'Kehadiran Terverifikasi',
+    message: 'Check-in Anda untuk acara "UI/UX Design Competition 2026" berhasil dicatat oleh panitia.',
+    is_read: true,
+    created_at: '2026-11-01T08:45:00+07:00',
+  },
+]
 
 // -----------------------------------------------------------------------------
 // DATA HELPERS
 // -----------------------------------------------------------------------------
 
-function getOwnedEvent(eventId, userId) {
-  return events.find(
-    (event) =>
-      event.id === Number(eventId) &&
-      event.created_by === userId,
+function getOwnedEvent(eventId, userId, { allowExpired = false } = {}) {
+  const event = events.find(
+    (item) =>
+      item.id === Number(eventId) &&
+      item.created_by === userId,
   )
+
+  if (!event) return null
+
+  // BR-09: Draft yang melewati payment_deadline dianggap tidak ada saat diakses (K-04)
+  if (
+    !allowExpired &&
+    event.status === 'draft' &&
+    event.payment_deadline &&
+    new Date(event.payment_deadline).getTime() < Date.now()
+  ) {
+    return null
+  }
+
+  return event
 }
 
 function eventWithRelations(event) {
@@ -947,9 +1616,20 @@ export const handlers = [
     const search = url.searchParams.get('search')?.toLowerCase()
     const status = url.searchParams.get('status')
 
-    let result = events.filter(
-      (event) => event.created_by === user.id,
-    )
+    let result = events.filter((event) => {
+      if (event.created_by !== user.id) return false
+
+      // BR-09: Draft kedaluwarsa dianggap tidak ada di listing panitia
+      if (
+        event.status === 'draft' &&
+        event.payment_deadline &&
+        new Date(event.payment_deadline).getTime() < Date.now()
+      ) {
+        return false
+      }
+
+      return true
+    })
 
     if (search) {
       result = result.filter((event) =>
@@ -2082,6 +2762,53 @@ export const handlers = [
       return successResponse(
         null,
         'Kategori berhasil dihapus',
+      )
+    },
+  ),
+
+  // ===========================================================================
+  // INTERNAL: PURGE EXPIRED DRAFTS (BR-09, K-04, Bab 8.2)
+  // ===========================================================================
+
+  // POST /internal/purge-expired-drafts
+  http.post(
+    `${API_BASE_URL}/internal/purge-expired-drafts`,
+    async ({ request }) => {
+      const secret = request.headers.get('X-Internal-Secret')
+      const expectedSecret =
+        import.meta.env.VITE_INTERNAL_PURGE_SECRET || 'eventhub-purge-secret'
+
+      if (secret !== expectedSecret) {
+        return errorResponse(
+          401,
+          'UNAUTHENTICATED',
+          'Akses internal ditolak: Secret header tidak valid.',
+        )
+      }
+
+      const now = Date.now()
+      const expiredDrafts = events.filter(
+        (event) =>
+          event.status === 'draft' &&
+          event.payment_deadline &&
+          new Date(event.payment_deadline).getTime() < now,
+      )
+
+      const purgedCount = expiredDrafts.length
+
+      for (const draft of expiredDrafts) {
+        delete eventFormFields[draft.id]
+        const index = events.indexOf(draft)
+        if (index !== -1) {
+          events.splice(index, 1)
+        }
+      }
+
+      return successResponse(
+        {
+          purged_count: purgedCount,
+        },
+        'Purge draft kedaluwarsa selesai',
       )
     },
   ),

@@ -163,6 +163,9 @@ Endpoint yang disimulasikan meliputi:
 - GET `/notifications`
 - PATCH `/notifications/{id}/read`
 
+**Internal**
+- POST `/internal/purge-expired-drafts`
+
 ### Akun Demo
 
 | Role | Email | Password |
@@ -180,6 +183,33 @@ Akun tersebut hanya untuk pengujian mock API, bukan akun backend produksi.
 - Mock tidak menggunakan database MySQL.
 - Operasi transaksi atomik dan `lockForUpdate` tetap harus diterapkan pada backend Laravel.
 - Endpoint ekspor masih berupa simulasi data JSON, bukan file XLSX sebenarnya.
+
+### Simulasi Purge Draft Kedaluwarsa Secara Lokal (Bab 14)
+
+Sesuai aturan bisnis **BR-08** dan **BR-09**, draft event yang tidak dibayar dalam 24 jam akan dihapus otomatis.
+
+Untuk menguji pembersihan draft kedaluwarsa pada mock API MSW:
+
+Kirim request `POST` ke endpoint internal purge:
+
+```bash
+curl -X POST http://localhost:5173/api/v1/internal/purge-expired-drafts \
+  -H "X-Internal-Secret: eventhub-purge-secret"
+```
+
+Response yang dihasilkan:
+
+```json
+{
+  "success": true,
+  "message": "Purge draft kedaluwarsa selesai",
+  "data": {
+    "purged_count": 1
+  }
+}
+```
+
+Draft dengan ID 13 (yang memiliki `payment_deadline` lampau) akan terhapus otomatis dari memori.
 
 ## 7. Struktur Folder
 
