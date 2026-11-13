@@ -1,4 +1,3 @@
-
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { authService } from '../services/authService'
@@ -8,8 +7,13 @@ export const useAuthStore = defineStore('auth', () => {
   const token = ref(null)
   const loading = ref(false)
 
+  // Getters
   const isAuthenticated = computed(() => !!token.value)
   const role = computed(() => user.value?.role ?? null)
+  const userName = computed(() => user.value?.name ?? 'Pengguna')
+  const isPeserta = computed(() => role.value === 'peserta')
+  const isPanitia = computed(() => role.value === 'panitia')
+  const isDeveloper = computed(() => role.value === 'developer')
 
   function setAuth(userData, accessToken) {
     user.value = userData
@@ -17,39 +21,6 @@ export const useAuthStore = defineStore('auth', () => {
 
     localStorage.setItem('token', accessToken)
     localStorage.setItem('user', JSON.stringify(userData))
-  }
-
-  async function login(credentials) {
-    loading.value = true
-
-    try {
-      const result = await authService.login(credentials)
-
-      setAuth(result.data.user, result.data.token)
-
-      return result
-    } finally {
-      loading.value = false
-    }
-  }
-
-  async function fetchUser() {
-    const result = await authService.getMe()
-
-    user.value = result.data
-    localStorage.setItem('user', JSON.stringify(result.data))
-
-    return result.data
-  }
-
-  async function logout() {
-    try {
-      if (token.value) {
-        await authService.logout()
-      }
-    } finally {
-      clearAuth()
-    }
   }
 
   function clearAuth() {
@@ -74,13 +45,62 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  async function login(credentials) {
+    loading.value = true
+    try {
+      const result = await authService.login(credentials)
+      setAuth(result.data.user, result.data.token)
+      return result
+    } finally {
+      loading.value = false
+    }
+  }
+
+  async function register(userData) {
+    loading.value = true
+    try {
+      const result = await authService.register(userData)
+      setAuth(result.data.user, result.data.token)
+      return result
+    } finally {
+      loading.value = false
+    }
+  }
+
+  async function fetchUser() {
+    try {
+      const result = await authService.getMe()
+      user.value = result.data
+      localStorage.setItem('user', JSON.stringify(result.data))
+      return result.data
+    } catch (error) {
+      clearAuth()
+      throw error
+    }
+  }
+
+  async function logout() {
+    try {
+      if (token.value) {
+        await authService.logout()
+      }
+    } finally {
+      clearAuth()
+    }
+  }
+
   return {
     user,
     token,
     loading,
     role,
+    userName,
     isAuthenticated,
+    isPeserta,
+    isPanitia,
+    isDeveloper,
     login,
+    register,
     logout,
     fetchUser,
     setAuth,

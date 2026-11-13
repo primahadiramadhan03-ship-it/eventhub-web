@@ -1,5 +1,4 @@
 import axios from 'axios'
-import router from '../router'
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/v1',
@@ -41,7 +40,7 @@ api.interceptors.response.use(
     // HTTP 403: Role tidak sesuai / akses ditolak -> arahkan ke halaman 403
     if (status === 403) {
       if (window.location.pathname !== '/403') {
-        router.push('/403')
+        window.location.href = '/403'
       }
     }
 
