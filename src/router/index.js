@@ -54,7 +54,7 @@ const routes = [
   {
     path: '/events/:id/register',
     name: 'peserta.events.register',
-    component: () => import('../views/peserta/DashboardView.vue'),
+    component: () => import('../views/peserta/EventRegisterView.vue'),
     meta: { requiresAuth: true, roles: ['peserta'] },
   },
 
