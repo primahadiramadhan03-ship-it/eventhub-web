@@ -1,95 +1,125 @@
 <template>
-  <div class="container py-5">
-    <div class="row justify-content-center">
-      <div class="col-md-6 col-lg-5">
-        <div class="card shadow-sm border-0">
-          <div class="card-body p-4">
-            <h2 class="fw-bold text-center mb-1">EventHub</h2>
-            <p class="text-secondary text-center mb-4">
-              Masuk ke akun Anda
-            </p>
-
-            <!-- Pesan sesi berakhir jika dialihkan oleh interceptor 401 -->
-            <div
-              v-if="sessionExpiredNotice"
-              class="alert alert-warning py-2 small"
-              role="alert"
-            >
-              Sesi Anda telah berakhir. Silakan masuk kembali.
+  <div class="login-page py-5">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+          <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+            <!-- Header Login -->
+            <div class="bg-gradient-primary text-white p-4 p-md-5 text-center">
+              <span class="fs-1 d-inline-block mb-2">🔐</span>
+              <h2 class="fw-bold mb-1">Masuk ke EventHub</h2>
+              <p class="opacity-90 small mb-0">
+                Kelola event kampus, pendaftaran, dan tiket digital Anda.
+              </p>
             </div>
 
-            <!-- Pesan error login gagal -->
-            <div
-              v-if="errorMessage"
-              class="alert alert-danger py-2 small"
-              role="alert"
-            >
-              {{ errorMessage }}
-            </div>
-
-            <form @submit.prevent="handleLogin">
-              <div class="mb-3">
-                <label class="form-label">Email</label>
-                <input
-                  v-model="email"
-                  type="email"
-                  class="form-control"
-                  placeholder="nama@email.com"
-                  required
-                />
-              </div>
-
-              <div class="mb-3">
-                <label class="form-label">Password</label>
-                <input
-                  v-model="password"
-                  type="password"
-                  class="form-control"
-                  placeholder="Masukkan password"
-                  required
-                />
-              </div>
-
-              <button
-                type="submit"
-                class="btn btn-primary w-100"
-                :disabled="loading"
+            <!-- Card Body Form -->
+            <div class="card-body p-4 p-md-5">
+              <!-- Pesan sesi berakhir jika dialihkan oleh interceptor 401 -->
+              <div
+                v-if="sessionExpiredNotice"
+                class="alert alert-warning py-2 small rounded-3"
+                role="alert"
               >
-                <span
-                  v-if="loading"
-                  class="spinner-border spinner-border-sm me-1"
-                ></span>
-                {{ loading ? 'Memproses...' : 'Masuk' }}
-              </button>
-            </form>
+                ⚠️ Sesi Anda telah berakhir. Silakan masuk kembali.
+              </div>
 
-            <hr class="my-4" />
+              <!-- Pesan error login gagal -->
+              <div
+                v-if="errorMessage"
+                class="alert alert-danger py-2 small rounded-3"
+                role="alert"
+              >
+                {{ errorMessage }}
+              </div>
 
-            <!-- Tombol Cepat Akun Demo (Memudahkan Pengujian & Evaluasi) -->
-            <div class="text-center">
-              <p class="text-muted small mb-2">Pilih Cepat Akun Demo:</p>
-              <div class="d-flex justify-content-center gap-1 flex-wrap">
+              <form @submit.prevent="handleLogin">
+                <div class="mb-3">
+                  <label class="form-label small fw-semibold text-dark">Alamat Email</label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-light text-muted border-end-0">✉️</span>
+                    <input
+                      v-model="email"
+                      type="email"
+                      class="form-control border-start-0"
+                      placeholder="nama@email.com"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div class="mb-4">
+                  <div class="d-flex align-items-center justify-content-between mb-1">
+                    <label class="form-label small fw-semibold text-dark mb-0">Password</label>
+                  </div>
+                  <div class="input-group">
+                    <span class="input-group-text bg-light text-muted border-end-0">🔒</span>
+                    <input
+                      v-model="password"
+                      :type="showPassword ? 'text' : 'password'"
+                      class="form-control border-start-0 border-end-0"
+                      placeholder="Masukkan password Anda..."
+                      required
+                    />
+                    <button
+                      type="button"
+                      class="btn btn-outline-secondary border-start-0 text-muted"
+                      @click="showPassword = !showPassword"
+                    >
+                      {{ showPassword ? '🙈' : '👁️' }}
+                    </button>
+                  </div>
+                </div>
+
                 <button
-                  type="button"
-                  class="btn btn-sm btn-outline-secondary"
-                  @click="fillDemo('peserta')"
+                  type="submit"
+                  class="btn btn-primary w-100 py-3 rounded-pill fw-bold shadow-sm"
+                  :disabled="loading"
                 >
-                  Peserta
+                  <span
+                    v-if="loading"
+                    class="spinner-border spinner-border-sm me-2"
+                  ></span>
+                  {{ loading ? 'Memverifikasi...' : 'Masuk Sekarang →' }}
                 </button>
-                <button
-                  type="button"
-                  class="btn btn-sm btn-outline-secondary"
-                  @click="fillDemo('panitia')"
-                >
-                  Panitia
-                </button>
-                <button
-                  type="button"
-                  class="btn btn-sm btn-outline-secondary"
-                  @click="fillDemo('developer')"
-                >
-                  Developer
-                </button>
+              </form>
+
+              <!-- Tombol Cepat Akun Demo (Memudahkan Pengujian & Evaluasi Dosen/Asisten) -->
+              <div class="mt-4 pt-3 border-top">
+                <p class="text-secondary small text-center mb-2 fw-semibold">
+                  ⚡ Masuk Cepat Akun Demo (Uji Role):
+                </p>
+                <div class="d-flex justify-content-center gap-2 flex-wrap">
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-outline-primary rounded-pill px-3 py-1"
+                    @click="fillDemo('peserta')"
+                  >
+                    🎓 Peserta
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-outline-success rounded-pill px-3 py-1"
+                    @click="fillDemo('panitia')"
+                  >
+                    🎪 Panitia
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-outline-dark rounded-pill px-3 py-1"
+                    @click="fillDemo('developer')"
+                  >
+                    ⚙️ Developer
+                  </button>
+                </div>
+              </div>
+
+              <!-- Footer Tautan Register -->
+              <div class="text-center mt-4 pt-3 border-top">
+                <span class="small text-secondary">Belum memiliki akun? </span>
+                <router-link to="/register" class="small fw-bold text-decoration-none text-primary">
+                  Daftar akun baru
+                </router-link>
               </div>
             </div>
           </div>
@@ -111,6 +141,7 @@ const authStore = useAuthStore()
 
 const email = ref('')
 const password = ref('')
+const showPassword = ref(false)
 const errorMessage = ref('')
 const loading = computed(() => authStore.loading)
 
@@ -155,7 +186,13 @@ async function handleLogin() {
     router.push(targetRoute)
   } catch (error) {
     errorMessage.value =
-      error.response?.data?.message || 'Login gagal. Periksa kredensial Anda.'
+      error.response?.data?.message || 'Email atau password tidak sesuai.'
   }
 }
 </script>
+
+<style scoped>
+.bg-gradient-primary {
+  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+}
+</style>
