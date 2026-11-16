@@ -76,13 +76,13 @@ const routes = [
   {
     path: '/organizer/events/create',
     name: 'panitia.events.create',
-    component: () => import('../views/panitia/DashboardView.vue'),
+    component: () => import('../views/panitia/EventCreateView.vue'),
     meta: { requiresAuth: true, roles: ['panitia'] },
   },
   {
     path: '/organizer/events/:id/edit',
     name: 'panitia.events.edit',
-    component: () => import('../views/panitia/DashboardView.vue'),
+    component: () => import('../views/panitia/EventEditView.vue'),
     meta: { requiresAuth: true, roles: ['panitia'] },
   },
   {

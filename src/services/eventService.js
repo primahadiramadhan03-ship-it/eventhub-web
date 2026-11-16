@@ -46,5 +46,51 @@ export const eventService = {
     const response = await api.get(`/me/registrations/${id}`)
     return response.data
   },
+
+  /**
+   * Mengambil daftar event milik panitia yang sedang login
+   * @param {Object} params - { search, status, category_id, page, per_page }
+   */
+  async getOrganizerEvents(params = {}) {
+    const response = await api.get('/organizer/events', { params })
+    return response.data
+  },
+
+  /**
+   * Membuat event baru beserta field formulir dinamisnya (Panitia)
+   * @param {Object} payload - { title, category_id, description, location, quota, start_date, end_date, banner_url, form_fields }
+   */
+  async createOrganizerEvent(payload) {
+    const response = await api.post('/organizer/events', payload)
+    return response.data
+  },
+
+  /**
+   * Memperbarui event dan formulir dinamisnya (Panitia)
+   * @param {number|string} id
+   * @param {Object} payload
+   */
+  async updateOrganizerEvent(id, payload) {
+    const response = await api.put(`/organizer/events/${id}`, payload)
+    return response.data
+  },
+
+  /**
+   * Mengambil detail event spesifik milik panitia untuk diedit
+   * @param {number|string} id
+   */
+  async getOrganizerEventDetail(id) {
+    const response = await api.get(`/organizer/events/${id}`)
+    return response.data
+  },
+
+  /**
+   * Menghapus event draft (Panitia)
+   * @param {number|string} id
+   */
+  async deleteOrganizerEvent(id) {
+    const response = await api.delete(`/organizer/events/${id}`)
+    return response.data
+  },
 }
 
