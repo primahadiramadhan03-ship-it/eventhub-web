@@ -94,7 +94,7 @@ const routes = [
   {
     path: '/organizer/events/:id/registrations',
     name: 'panitia.events.registrations',
-    component: () => import('../views/panitia/DashboardView.vue'),
+    component: () => import('../views/panitia/EventRegistrationsView.vue'),
     meta: { requiresAuth: true, roles: ['panitia'] },
   },
   {
