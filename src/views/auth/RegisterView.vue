@@ -1,172 +1,167 @@
 <template>
-  <div class="register-page py-5">
-    <div class="container">
-      <div class="row justify-content-center">
-        <div class="col-12 col-md-9 col-lg-7 col-xl-6">
-          <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
-            <!-- Header Registrasi -->
-            <div class="bg-gradient-primary text-white p-4 p-md-5 text-center">
-              <span class="fs-1 d-inline-block mb-2">🚀</span>
-              <h2 class="fw-bold mb-1">Daftar Akun EventHub</h2>
-              <p class="opacity-90 small mb-0">
-                Bergabunglah dengan platform pendaftaran dan penayangan event kampus & komunitas.
-              </p>
+  <div class="eh-auth-page py-5 d-flex align-items-center justify-content-center">
+    <div class="eh-register-card bg-white">
+      <!-- Header -->
+      <div class="text-center mb-4">
+        <h1 class="fw-bold mb-1" style="font-size: 20px; color: #0f172a;">Buat Akun EventHub</h1>
+        <p class="mb-0" style="font-size: 14px; color: #64748b;">
+          Pilih peran Anda dan lengkapi data pendaftaran akun.
+        </p>
+      </div>
+
+      <!-- Alert Error Global / Peran Kosong (2002:4091) -->
+      <div
+        v-if="errorMessage || errors.role"
+        class="alert py-2 px-3 small mb-3"
+        style="background-color: #fef2f2; border: 1px solid #d64545; color: #991b1b; border-radius: 4px;"
+        role="alert"
+      >
+        {{ errors.role || errorMessage }}
+      </div>
+
+      <form @submit.prevent="handleRegister" novalidate>
+        <!-- 1. PILIH PERAN AKUN (Figma 2002:247 & 2002:4091) -->
+        <div class="mb-4">
+          <div class="d-flex align-items-center justify-content-between mb-2">
+            <label class="form-label mb-0 fw-medium" style="font-size: 14px; color: #0f172a;">
+              Pilih Peran Akun
+            </label>
+            <button
+              v-if="form.role"
+              type="button"
+              class="btn btn-link btn-sm p-0 text-decoration-none"
+              style="font-size: 11px; color: #64748b;"
+              @click="form.role = ''"
+              title="Uji state peran kosong"
+            >
+              Reset pilihan
+            </button>
+          </div>
+
+          <div class="row g-3">
+            <!-- Role 1: Peserta -->
+            <div class="col-sm-6">
+              <div
+                class="eh-role-card h-100 p-3"
+                :class="{
+                  'eh-role-selected': form.role === 'peserta',
+                  'eh-role-error': errors.role && !form.role
+                }"
+                @click="selectRole('peserta')"
+              >
+                <div class="d-flex align-items-center justify-content-between mb-1">
+                  <span class="fw-semibold" style="font-size: 14px; color: #0f172a;">Peserta</span>
+                  <span
+                    class="eh-radio-indicator d-inline-flex align-items-center justify-content-center"
+                    :class="{ 'active': form.role === 'peserta' }"
+                  >
+                    <span v-if="form.role === 'peserta'" class="eh-radio-dot"></span>
+                  </span>
+                </div>
+                <p class="mb-0" style="font-size: 12px; color: #64748b; line-height: 16px;">
+                  Daftar dan ikuti event kampus serta komunitas.
+                </p>
+              </div>
             </div>
 
-            <!-- Card Body Form -->
-            <div class="card-body p-4 p-md-5">
-              <!-- Alert Error Global -->
-              <div v-if="errorMessage" class="alert alert-danger py-2 small mb-4 rounded-3" role="alert">
-                <strong>Gagal Mendaftar:</strong> {{ errorMessage }}
-              </div>
-
-              <form @submit.prevent="handleRegister">
-                <!-- ========================================================= -->
-                <!-- 1. PILIHAN PERAN (K-11, TC-01, TC-02)                     -->
-                <!-- ========================================================= -->
-                <div class="mb-4">
-                  <label class="form-label fw-bold text-dark mb-2">
-                    Pilih Peran Akun Anda: <span class="text-danger">*</span>
-                  </label>
-
-                  <div class="row g-3">
-                    <!-- Opsi Peserta -->
-                    <div class="col-sm-6">
-                      <div
-                        class="role-card p-3 rounded-3 border text-center h-100 transition-all cursor-pointer"
-                        :class="{ 'role-selected border-primary bg-primary bg-opacity-10': form.role === 'peserta' }"
-                        @click="form.role = 'peserta'"
-                      >
-                        <div class="fs-2 mb-1">🎓</div>
-                        <div class="fw-bold text-dark">Peserta</div>
-                        <small class="text-secondary d-block mt-1" style="font-size: 0.75rem;">
-                          Ikuti seminar, workshop, dan lomba serta dapatkan tiket digital.
-                        </small>
-                      </div>
-                    </div>
-
-                    <!-- Opsi Panitia -->
-                    <div class="col-sm-6">
-                      <div
-                        class="role-card p-3 rounded-3 border text-center h-100 transition-all cursor-pointer"
-                        :class="{ 'role-selected border-primary bg-primary bg-opacity-10': form.role === 'panitia' }"
-                        @click="form.role = 'panitia'"
-                      >
-                        <div class="fs-2 mb-1">🎪</div>
-                        <div class="fw-bold text-dark">Panitia</div>
-                        <small class="text-secondary d-block mt-1" style="font-size: 0.75rem;">
-                          Publikasikan event kampus, buat formulir pendaftaran, dan check-in.
-                        </small>
-                      </div>
-                    </div>
-                  </div>
-
-                  <small class="text-muted d-block mt-2" style="font-size: 0.75rem;">
-                    ℹ️ Catatan: Akun Developer hanya disediakan oleh sistem dan tidak dibuka untuk pendaftaran publik (K-11).
-                  </small>
+            <!-- Role 2: Panitia Event -->
+            <div class="col-sm-6">
+              <div
+                class="eh-role-card h-100 p-3"
+                :class="{
+                  'eh-role-selected': form.role === 'panitia',
+                  'eh-role-error': errors.role && !form.role
+                }"
+                @click="selectRole('panitia')"
+              >
+                <div class="d-flex align-items-center justify-content-between mb-1">
+                  <span class="fw-semibold" style="font-size: 14px; color: #0f172a;">Panitia Event</span>
+                  <span
+                    class="eh-radio-indicator d-inline-flex align-items-center justify-content-center"
+                    :class="{ 'active': form.role === 'panitia' }"
+                  >
+                    <span v-if="form.role === 'panitia'" class="eh-radio-dot"></span>
+                  </span>
                 </div>
-
-                <!-- ========================================================= -->
-                <!-- 2. DATA IDENTITAS PENGGUNA                                -->
-                <!-- ========================================================= -->
-                <!-- Nama Lengkap -->
-                <div class="mb-3">
-                  <label class="form-label small fw-semibold text-dark">Nama Lengkap</label>
-                  <div class="input-group">
-                    <span class="input-group-text bg-light text-muted border-end-0">👤</span>
-                    <input
-                      v-model="form.name"
-                      type="text"
-                      class="form-control border-start-0"
-                      :class="{ 'is-invalid': errors.name }"
-                      placeholder="Masukkan nama lengkap Anda..."
-                      required
-                    />
-                    <div v-if="errors.name" class="invalid-feedback">{{ errors.name }}</div>
-                  </div>
-                </div>
-
-                <!-- Email -->
-                <div class="mb-3">
-                  <label class="form-label small fw-semibold text-dark">Alamat Email</label>
-                  <div class="input-group">
-                    <span class="input-group-text bg-light text-muted border-end-0">✉️</span>
-                    <input
-                      v-model="form.email"
-                      type="email"
-                      class="form-control border-start-0"
-                      :class="{ 'is-invalid': errors.email }"
-                      placeholder="nama@email.com"
-                      required
-                    />
-                    <div v-if="errors.email" class="invalid-feedback">{{ errors.email }}</div>
-                  </div>
-                </div>
-
-                <!-- Password -->
-                <div class="mb-3">
-                  <label class="form-label small fw-semibold text-dark">Password</label>
-                  <div class="input-group">
-                    <span class="input-group-text bg-light text-muted border-end-0">🔒</span>
-                    <input
-                      v-model="form.password"
-                      :type="showPassword ? 'text' : 'password'"
-                      class="form-control border-start-0 border-end-0"
-                      :class="{ 'is-invalid': errors.password }"
-                      placeholder="Minimal 8 karakter..."
-                      required
-                    />
-                    <button
-                      type="button"
-                      class="btn btn-outline-secondary border-start-0 text-muted"
-                      @click="showPassword = !showPassword"
-                    >
-                      {{ showPassword ? '🙈' : '👁️' }}
-                    </button>
-                    <div v-if="errors.password" class="invalid-feedback">{{ errors.password }}</div>
-                  </div>
-                </div>
-
-                <!-- Konfirmasi Password -->
-                <div class="mb-4">
-                  <label class="form-label small fw-semibold text-dark">Konfirmasi Password</label>
-                  <div class="input-group">
-                    <span class="input-group-text bg-light text-muted border-end-0">🔑</span>
-                    <input
-                      v-model="form.password_confirmation"
-                      :type="showPassword ? 'text' : 'password'"
-                      class="form-control border-start-0"
-                      :class="{ 'is-invalid': errors.password_confirmation }"
-                      placeholder="Ulangi password di atas..."
-                      required
-                    />
-                    <div v-if="errors.password_confirmation" class="invalid-feedback">
-                      {{ errors.password_confirmation }}
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Tombol Submit -->
-                <button
-                  type="submit"
-                  class="btn btn-primary w-100 py-3 rounded-pill fw-bold shadow-sm"
-                  :disabled="loading"
-                >
-                  <span v-if="loading" class="spinner-border spinner-border-sm me-2"></span>
-                  {{ loading ? 'Mendaftarkan Akun...' : 'Daftar Sekarang →' }}
-                </button>
-              </form>
-
-              <!-- Footer Tautan Masuk -->
-              <div class="text-center mt-4 pt-3 border-top">
-                <span class="small text-secondary">Sudah memiliki akun? </span>
-                <router-link to="/login" class="small fw-bold text-decoration-none text-primary">
-                  Masuk di sini
-                </router-link>
+                <p class="mb-0" style="font-size: 12px; color: #64748b; line-height: 16px;">
+                  Buat dan kelola event serta formulir pendaftaran.
+                </p>
               </div>
             </div>
           </div>
         </div>
+
+        <!-- 2. FORM FIELDS -->
+        <div class="mb-3">
+          <label class="form-label mb-1 fw-medium" style="font-size: 14px; color: #0f172a;">Nama Lengkap</label>
+          <input
+            v-model="form.name"
+            type="text"
+            class="form-control eh-input"
+            :class="{ 'is-invalid': errors.name }"
+            placeholder="Aditya Pratama"
+            required
+          />
+          <div v-if="errors.name" class="invalid-feedback">{{ errors.name }}</div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label mb-1 fw-medium" style="font-size: 14px; color: #0f172a;">Email</label>
+          <input
+            v-model="form.email"
+            type="email"
+            class="form-control eh-input"
+            :class="{ 'is-invalid': errors.email }"
+            placeholder="aditya.pratama@mhs.kampus.ac.id"
+            required
+          />
+          <div v-if="errors.email" class="invalid-feedback">{{ errors.email }}</div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label mb-1 fw-medium" style="font-size: 14px; color: #0f172a;">Password</label>
+          <input
+            v-model="form.password"
+            type="password"
+            class="form-control eh-input"
+            :class="{ 'is-invalid': errors.password }"
+            placeholder="Minimal 8 karakter"
+            required
+          />
+          <div v-if="errors.password" class="invalid-feedback">{{ errors.password }}</div>
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label mb-1 fw-medium" style="font-size: 14px; color: #0f172a;">Konfirmasi Password</label>
+          <input
+            v-model="form.password_confirmation"
+            type="password"
+            class="form-control eh-input"
+            :class="{ 'is-invalid': errors.password_confirmation }"
+            placeholder="Ulangi password"
+            required
+          />
+          <div v-if="errors.password_confirmation" class="invalid-feedback">
+            {{ errors.password_confirmation }}
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          class="btn eh-btn-indigo w-100 py-2 fw-semibold"
+          :disabled="loading"
+        >
+          <span v-if="loading" class="spinner-border spinner-border-sm me-2"></span>
+          {{ loading ? 'Mendaftarkan Akun...' : 'Buat Akun' }}
+        </button>
+      </form>
+
+      <!-- Footer Tautan Masuk -->
+      <div class="text-center mt-4 pt-3" style="border-top: 1px solid #e2e8f0; font-size: 14px;">
+        <span style="color: #64748b;">Sudah punya akun? </span>
+        <router-link to="/login" class="fw-medium text-decoration-none" style="color: #4f46e5;">
+          Masuk
+        </router-link>
       </div>
     </div>
   </div>
@@ -182,7 +177,6 @@ const router = useRouter()
 const authStore = useAuthStore()
 
 const loading = ref(false)
-const showPassword = ref(false)
 const errorMessage = ref('')
 
 const form = reactive({
@@ -190,14 +184,24 @@ const form = reactive({
   email: '',
   password: '',
   password_confirmation: '',
-  role: 'peserta', // Default role per K-11
+  role: 'peserta',
 })
 
 const errors = reactive({})
 
+function selectRole(role) {
+  form.role = role
+  delete errors.role
+}
+
 function validateForm() {
   let valid = true
   Object.keys(errors).forEach((key) => delete errors[key])
+
+  if (!form.role) {
+    errors.role = 'Silakan pilih peran akun terlebih dahulu (Peserta atau Panitia Event).'
+    valid = false
+  }
 
   if (!form.name.trim()) {
     errors.name = 'Nama lengkap wajib diisi.'
@@ -239,7 +243,6 @@ async function handleRegister() {
     const target = getDashboardPath(res.data?.user?.role || form.role)
     router.push(target)
   } catch (err) {
-    console.error('Register error:', err)
     if (err.response?.data?.errors) {
       const serverErrors = err.response.data.errors
       Object.keys(serverErrors).forEach((key) => {
@@ -255,20 +258,84 @@ async function handleRegister() {
 </script>
 
 <style scoped>
-.bg-gradient-primary {
-  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+.eh-auth-page {
+  min-height: calc(100vh - 140px);
 }
 
-.role-card {
+.eh-register-card {
+  width: 100%;
+  max-width: 512px;
+  border: 1px solid #c7d2fe;
+  border-radius: 8px;
+  padding: 33px;
+}
+
+.eh-role-card {
+  background-color: #ffffff;
+  border: 1px solid #c7d2fe;
+  border-radius: 8px;
   cursor: pointer;
-  border-width: 2px !important;
+  transition: all 0.15s ease;
 }
 
-.role-card:hover {
-  border-color: #3b82f6 !important;
+.eh-role-card:hover {
+  border-color: #4f46e5;
 }
 
-.role-selected {
-  border-color: #3b82f6 !important;
+.eh-role-selected {
+  background-color: #eef2ff;
+  border: 2px solid #4f46e5;
+}
+
+.eh-role-error {
+  border-color: #d64545;
+  background-color: #fef2f2;
+}
+
+.eh-radio-indicator {
+  width: 18px;
+  height: 18px;
+  border-radius: 9999px;
+  border: 1px solid #6b7280;
+  background-color: #ffffff;
+}
+
+.eh-radio-indicator.active {
+  background-color: #4f46e5;
+  border-color: #4f46e5;
+}
+
+.eh-radio-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background-color: #ffffff;
+}
+
+.eh-input {
+  border: 1px solid #c7d2fe;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #0f172a;
+  padding: 9px 13px;
+}
+
+.eh-input:focus {
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.15);
+}
+
+.eh-btn-indigo {
+  background-color: #4f46e5;
+  border-color: #4f46e5;
+  color: #ffffff;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.eh-btn-indigo:hover {
+  background-color: #4338ca;
+  border-color: #4338ca;
+  color: #ffffff;
 }
 </style>

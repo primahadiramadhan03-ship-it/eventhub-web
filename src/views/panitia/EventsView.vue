@@ -1,288 +1,235 @@
 <template>
-  <div class="panitia-events-page pb-5">
-    <!-- Header Halaman & Aksi Tambah -->
-    <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+  <div class="eh-panitia-events pb-5">
+    <!-- 1. TOP HEADER (Figma 2002:997) -->
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
       <div>
-        <h2 class="h4 fw-bold text-dark mb-1">Kelola Event Saya</h2>
-        <p class="text-secondary small mb-0">
-          Pantau status penayangan, batas waktu pembayaran sewa, dan kelola pendaftar acara Anda.
+        <h1 class="fw-bold mb-1" style="font-size: 24px; color: #0f172a;">Kelola Event</h1>
+        <p class="mb-0" style="font-size: 14px; color: #64748b;">
+          Pantau status, pembayaran biaya tayang, dan pendaftar untuk seluruh event Anda.
         </p>
       </div>
-      <router-link to="/organizer/events/create" class="btn btn-primary btn-sm rounded-pill px-4 fw-bold shadow-sm">
-        ➕ Buat Event Baru
+      <router-link
+        to="/organizer/events/create"
+        class="btn eh-btn-indigo px-3 py-2 fw-semibold"
+      >
+        Buat Event Baru
       </router-link>
     </div>
 
-    <!-- Filter & Search Bar -->
-    <div class="card border-0 shadow-sm rounded-4 p-3 p-md-4 mb-4 bg-white">
-      <div class="row g-3 align-items-center">
-        <!-- Search Input -->
-        <div class="col-12 col-md-5">
-          <div class="input-group">
-            <span class="input-group-text bg-light border-end-0 text-muted">🔍</span>
-            <input
-              v-model="filters.search"
-              type="text"
-              class="form-control bg-light border-start-0"
-              placeholder="Cari judul event atau lokasi..."
-            />
-          </div>
-        </div>
-
-        <!-- Filter Status Event -->
-        <div class="col-12 col-sm-6 col-md-4">
-          <select v-model="filters.status" class="form-select bg-light">
-            <option value="all">Semua Status Event</option>
-            <option value="draft">Draft (Menunggu Bayar)</option>
-            <option value="menunggu_review">Menunggu Review</option>
-            <option value="tayang">Tayang (Aktif)</option>
-            <option value="ditolak">Ditolak</option>
-            <option value="selesai">Selesai</option>
-          </select>
-        </div>
-
-        <!-- Filter Kategori -->
-        <div class="col-12 col-sm-6 col-md-3">
-          <select v-model="filters.category" class="form-select bg-light">
-            <option value="all">Semua Kategori</option>
-            <option value="Seminar">Seminar</option>
-            <option value="Workshop">Workshop</option>
-            <option value="Lomba">Lomba</option>
-            <option value="Perekrutan">Perekrutan</option>
-            <option value="Komunitas">Komunitas</option>
-          </select>
-        </div>
+    <!-- 2. FILTER & SEARCH BAR (Figma 2002:1004) -->
+    <div class="eh-filter-card bg-white p-3 mb-4 d-flex align-items-center justify-content-between flex-wrap gap-3">
+      <div class="flex-grow-1" style="max-width: 340px;">
+        <input
+          v-model="filters.search"
+          type="text"
+          class="form-control eh-search-input"
+          placeholder="Cari judul event..."
+        />
       </div>
 
-      <!-- Filter Active Tags -->
-      <div v-if="filters.search || filters.status !== 'all' || filters.category !== 'all'" class="d-flex align-items-center gap-2 mt-3 pt-3 border-top flex-wrap">
-        <span class="small text-secondary">Filter aktif:</span>
-        <span v-if="filters.search" class="badge bg-light text-dark border">
-          Pencarian: "{{ filters.search }}"
-        </span>
-        <span v-if="filters.status !== 'all'" class="badge bg-light text-dark border">
-          Status: {{ filters.status }}
-        </span>
-        <span v-if="filters.category !== 'all'" class="badge bg-light text-dark border">
-          Kategori: {{ filters.category }}
-        </span>
-        <button class="btn btn-link btn-sm text-danger text-decoration-none p-0 ms-auto" @click="resetFilters">
-          ✕ Reset Filter
+      <div class="d-flex align-items-center gap-2 flex-wrap">
+        <button
+          v-for="tab in statusTabs"
+          :key="tab.value"
+          type="button"
+          class="btn btn-sm eh-filter-pill"
+          :class="{ active: filters.status === tab.value }"
+          @click="filters.status = tab.value; currentPage = 1"
+        >
+          {{ tab.label }}
         </button>
       </div>
     </div>
 
-    <!-- 1. EMPTY STATE -->
-    <div v-if="filteredEvents.length === 0" class="card border-0 shadow-sm rounded-4 p-5 text-center bg-white my-3">
-      <div class="display-3 mb-3">📅</div>
-      <h4 class="fw-bold mb-2">Tidak Ada Event Ditemukan</h4>
-      <p class="text-secondary mb-4">
-        {{ filters.search || filters.status !== 'all' ? 'Tidak ada event yang sesuai dengan kriteria filter Anda.' : 'Anda belum membuat event apapun. Mulai buat acara kampus Anda sekarang!' }}
-      </p>
-      <div>
-        <button v-if="filters.search || filters.status !== 'all'" class="btn btn-outline-secondary px-4 rounded-pill me-2" @click="resetFilters">
-          Bersihkan Filter
-        </button>
-        <router-link to="/organizer/events/create" class="btn btn-primary px-4 rounded-pill">
-          ➕ Buat Event Baru
-        </router-link>
-      </div>
-    </div>
-
-    <!-- 2. TABEL INTERAKTIF EVENT SAYA -->
-    <div v-else class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white">
+    <!-- 3. EVENTS TABLE CARD (Figma 2002:1032) -->
+    <div class="eh-table-card bg-white overflow-hidden mb-3">
       <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
-          <thead class="table-light">
+        <table class="table mb-0 align-middle eh-table">
+          <thead>
             <tr>
-              <th class="ps-4" style="min-width: 260px;">Event</th>
-              <th>Kategori</th>
-              <th>Jadwal Pelaksanaan</th>
-              <th>Keterisian Kuota</th>
-              <th>Status Event</th>
-              <th>Batas Waktu Bayar</th>
-              <th class="text-end pe-4" style="min-width: 160px;">Aksi</th>
+              <th class="ps-4">JUDUL EVENT</th>
+              <th>KATEGORI</th>
+              <th>JADWAL</th>
+              <th>KUOTA TERISI</th>
+              <th>STATUS</th>
+              <th class="text-end pe-4">AKSI</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="evt in paginatedEvents" :key="evt.id">
-              <!-- Event & Lokasi -->
+            <tr v-for="evt in filteredEvents" :key="evt.id">
+              <!-- JUDUL EVENT + SUBTITLE COUNTDOWN FOR DRAFT -->
               <td class="ps-4">
-                <div class="fw-bold text-dark text-truncate" style="max-width: 250px;" :title="evt.title">
+                <div class="fw-medium" style="font-size: 14px; color: #0f172a;">
                   {{ evt.title }}
                 </div>
-                <small class="text-muted d-block text-truncate" style="max-width: 250px;">
-                  📍 {{ evt.location }}
-                </small>
-              </td>
-
-              <!-- Kategori -->
-              <td>
-                <span class="badge bg-light text-dark border">{{ evt.category?.name || 'Umum' }}</span>
-              </td>
-
-              <!-- Jadwal -->
-              <td class="small text-secondary">
-                {{ formatDateTime(evt.start_time) }}
-              </td>
-
-              <!-- Keterisian Kuota -->
-              <td>
-                <div class="small fw-semibold mb-1">
-                  {{ evt.quota - evt.remaining_quota }} / {{ evt.quota }} Kursi
-                </div>
-                <div class="progress" style="height: 6px; width: 80px;">
-                  <div
-                    class="progress-bar"
-                    :class="evt.remaining_quota <= 0 ? 'bg-secondary' : 'bg-primary'"
-                    :style="{ width: `${Math.round(((evt.quota - evt.remaining_quota) / evt.quota) * 100)}%` }"
-                  ></div>
+                <div
+                  v-if="evt.status === 'draft'"
+                  class="font-monospace mt-1"
+                  style="font-size: 12px; color: #b45309;"
+                >
+                  Sisa waktu bayar: {{ evt.countdown || '05:12:30' }}
                 </div>
               </td>
 
-              <!-- Status Event (BadgeStatus) -->
-              <td>
-                <BadgeStatus :status="evt.status" />
+              <!-- KATEGORI -->
+              <td style="font-size: 14px; color: #64748b;">
+                {{ evt.category }}
               </td>
 
-              <!-- Batas Waktu Bayar 24 Jam (CountdownTimer) -->
-              <td>
-                <CountdownTimer
-                  v-if="evt.status === 'draft' && evt.payment_deadline"
-                  :deadline="evt.payment_deadline"
-                />
-                <span v-else class="text-muted small">-</span>
+              <!-- JADWAL -->
+              <td style="font-size: 14px; color: #0f172a;">
+                {{ evt.date_label }}
               </td>
 
-              <!-- Aksi Lengkap Sesuai Status -->
+              <!-- KUOTA TERISI -->
+              <td class="font-monospace" style="font-size: 14px; color: #0f172a;">
+                {{ evt.filled }} / {{ evt.quota }}
+              </td>
+
+              <!-- STATUS -->
+              <td>
+                <span v-if="evt.status === 'draft'" class="eh-badge eh-badge-yellow">
+                  Draft
+                </span>
+                <span v-else-if="evt.status === 'menunggu_review'" class="eh-badge eh-badge-blue">
+                  Menunggu Review
+                </span>
+                <span v-else-if="evt.status === 'tayang'" class="eh-badge eh-badge-green">
+                  Tayang
+                </span>
+                <span v-else-if="evt.status === 'ditolak'" class="eh-badge eh-badge-red">
+                  Ditolak
+                </span>
+                <span v-else-if="evt.status === 'kuota_habis'" class="eh-badge eh-badge-darkgray">
+                  KUOTA HABIS
+                </span>
+                <span v-else-if="evt.status === 'selesai'" class="eh-badge eh-badge-gray">
+                  Selesai
+                </span>
+              </td>
+
+              <!-- AKSI -->
               <td class="text-end pe-4">
-                <div class="d-flex justify-content-end gap-1">
-                  <!-- Aksi Jika DRAFT: Bayar Sewa & Edit -->
-                  <template v-if="evt.status === 'draft'">
-                    <router-link
-                      :to="`/organizer/events/${evt.id}/payment`"
-                      class="btn btn-warning btn-sm rounded-pill px-3 fw-bold shadow-sm"
-                      title="Bayar Sewa Penayangan"
-                    >
-                      💳 Bayar
-                    </router-link>
-                    <router-link
-                      :to="`/organizer/events/${evt.id}/edit`"
-                      class="btn btn-outline-secondary btn-sm rounded-circle p-1"
-                      style="width: 32px; height: 32px;"
-                      title="Edit Data Event"
-                    >
-                      ✏️
-                    </router-link>
-                  </template>
-
-                  <!-- Aksi Jika TAYANG: Pendaftar & Laporan -->
-                  <template v-else-if="evt.status === 'tayang'">
-                    <router-link
-                      :to="`/organizer/events/${evt.id}/registrations`"
-                      class="btn btn-outline-primary btn-sm rounded-pill px-2"
-                      title="Lihat Daftar Peserta"
-                    >
-                      👥 Peserta
-                    </router-link>
-                    <router-link
-                      :to="`/organizer/events/${evt.id}/report`"
-                      class="btn btn-outline-secondary btn-sm rounded-pill px-2"
-                      title="Laporan & Unduh Excel"
-                    >
-                      📊 Laporan
-                    </router-link>
-                  </template>
-
-                  <!-- Aksi Jika DITOLAK: Modal Alasan Penolakan -->
-                  <template v-else-if="evt.status === 'ditolak'">
-                    <button
-                      class="btn btn-outline-danger btn-sm rounded-pill px-2"
-                      @click="showRejectModal(evt)"
-                    >
-                      ⚠️ Alasan Ditolak
-                    </button>
-                  </template>
-
-                  <!-- Status Menunggu Review -->
-                  <template v-else-if="evt.status === 'menunggu_review'">
-                    <span class="badge bg-light text-muted border py-2 px-3 small">
-                      ⏳ Ditinjau Developer
-                    </span>
-                  </template>
-
-                  <!-- Selesai -->
-                  <template v-else>
-                    <router-link
-                      :to="`/organizer/events/${evt.id}/report`"
-                      class="btn btn-outline-secondary btn-sm rounded-pill px-2"
-                    >
-                      📊 Rekap
-                    </router-link>
-                  </template>
+                <!-- 1. Draft: Edit + Bayar -->
+                <div v-if="evt.status === 'draft'" class="d-inline-flex align-items-center gap-3">
+                  <router-link
+                    :to="`/organizer/events/${evt.id}/edit`"
+                    class="fw-semibold text-decoration-none"
+                    style="font-size: 12px; color: #4f46e5;"
+                  >
+                    Edit
+                  </router-link>
+                  <router-link
+                    :to="`/organizer/events/${evt.id}/payment`"
+                    class="btn eh-btn-indigo btn-sm px-2 py-1"
+                    style="font-size: 12px;"
+                  >
+                    Bayar
+                  </router-link>
                 </div>
+
+                <!-- 2. Menunggu Review: Lihat -->
+                <router-link
+                  v-else-if="evt.status === 'menunggu_review'"
+                  :to="`/events/${evt.id}`"
+                  class="fw-semibold text-decoration-none"
+                  style="font-size: 12px; color: #4f46e5;"
+                >
+                  Lihat
+                </router-link>
+
+                <!-- 3. Tayang: Pendaftar + Ekspor -->
+                <div v-else-if="evt.status === 'tayang'" class="d-inline-flex align-items-center gap-3">
+                  <router-link
+                    :to="`/organizer/events/${evt.id}/registrations`"
+                    class="fw-semibold text-decoration-none"
+                    style="font-size: 12px; color: #4f46e5;"
+                  >
+                    Pendaftar
+                  </router-link>
+                  <router-link
+                    :to="`/organizer/events/${evt.id}/report`"
+                    class="fw-medium text-decoration-none"
+                    style="font-size: 12px; color: #64748b;"
+                  >
+                    Ekspor
+                  </router-link>
+                </div>
+
+                <!-- 4. Ditolak: Lihat Catatan -->
+                <button
+                  v-else-if="evt.status === 'ditolak'"
+                  type="button"
+                  class="btn btn-link p-0 fw-semibold text-decoration-none"
+                  style="font-size: 12px; color: #d64545;"
+                  @click="selectedRejectedEvent = evt"
+                >
+                  Lihat Catatan
+                </button>
+
+                <!-- 5. Kuota Habis / Selesai: Pendaftar -->
+                <router-link
+                  v-else
+                  :to="`/organizer/events/${evt.id}/registrations`"
+                  class="fw-semibold text-decoration-none"
+                  style="font-size: 12px; color: #4f46e5;"
+                >
+                  Pendaftar
+                </router-link>
+              </td>
+            </tr>
+            <tr v-if="filteredEvents.length === 0">
+              <td colspan="6" class="text-center py-4" style="font-size: 14px; color: #64748b;">
+                Tidak ada event yang sesuai dengan filter pencarian.
               </td>
             </tr>
           </tbody>
         </table>
       </div>
+    </div>
 
-      <!-- Pagination Footer -->
-      <div v-if="totalPages > 1" class="card-footer bg-white p-3 border-top d-flex justify-content-between align-items-center flex-wrap gap-2">
-        <small class="text-secondary">
-          Menampilkan {{ ((currentPage - 1) * perPage) + 1 }} - {{ Math.min(currentPage * perPage, filteredEvents.length) }} dari {{ filteredEvents.length }} event
-        </small>
-        <ul class="pagination pagination-sm mb-0">
-          <li class="page-item" :class="{ disabled: currentPage === 1 }">
-            <button class="page-link" @click="currentPage--">‹</button>
-          </li>
-          <li
-            v-for="p in totalPages"
-            :key="p"
-            class="page-item"
-            :class="{ active: currentPage === p }"
-          >
-            <button class="page-link" @click="currentPage = p">{{ p }}</button>
-          </li>
-          <li class="page-item" :class="{ disabled: currentPage === totalPages }">
-            <button class="page-link" @click="currentPage++">›</button>
-          </li>
-        </ul>
+    <!-- 4. PAGINATION FOOTER (Figma 2002:1141) -->
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+      <div style="font-size: 12px; color: #64748b;">
+        Menampilkan 1-{{ filteredEvents.length }} dari {{ filteredEvents.length }} event
+      </div>
+      <div class="d-flex align-items-center gap-1">
+        <button type="button" class="btn eh-page-btn" disabled>Sebelumnya</button>
+        <button type="button" class="btn eh-page-num active">1</button>
+        <button type="button" class="btn eh-page-btn" disabled>Selanjutnya</button>
       </div>
     </div>
 
-    <!-- ======================================================================= -->
-    <!-- MODAL ALASAN PENOLAKAN DEVELOPER (Bab 9.2, K-15, BR-13)                 -->
-    <!-- ======================================================================= -->
+    <!-- MODAL CATATAN PENOLAKAN -->
     <div
       v-if="selectedRejectedEvent"
       class="modal fade show d-block"
       tabindex="-1"
-      style="background: rgba(0, 0, 0, 0.5);"
+      style="background: rgba(15, 23, 42, 0.5);"
     >
       <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
-          <div class="modal-header bg-danger text-white">
-            <h5 class="modal-title fw-bold">⚠️ Alasan Penolakan Event</h5>
-            <button type="button" class="btn-close btn-close-white" @click="selectedRejectedEvent = null"></button>
+        <div class="modal-content" style="border: 1px solid #c7d2fe; border-radius: 8px;">
+          <div class="modal-header" style="border-bottom: 1px solid #e2e8f0;">
+            <h5 class="modal-title fw-bold" style="font-size: 16px; color: #0f172a;">
+              Catatan Penolakan Moderator
+            </h5>
+            <button type="button" class="btn-close" @click="selectedRejectedEvent = null"></button>
           </div>
           <div class="modal-body p-4">
-            <h6 class="fw-bold text-dark mb-1">{{ selectedRejectedEvent.title }}</h6>
-            <small class="text-secondary d-block mb-3">Kategori: {{ selectedRejectedEvent.category?.name }}</small>
-
-            <div class="alert alert-danger border-0 rounded-3 p-3">
-              <strong class="d-block mb-1">Catatan Penolakan dari Developer:</strong>
-              <p class="mb-0 small">
-                {{ selectedRejectedEvent.reject_reason || 'Deskripsi acara tidak memenuhi standar perizinan kegiatan kampus atau melanggar ketentuan penayangan.' }}
-              </p>
+            <div class="fw-semibold mb-1" style="font-size: 14px; color: #0f172a;">
+              {{ selectedRejectedEvent.title }}
             </div>
-
-            <div class="alert alert-info border-0 rounded-3 small mb-0">
-              ℹ️ Sesuai aturan bisnis K-15: Anda dapat memperbaiki deskripsi acara pada menu Edit atau mengajukan kembali event baru.
+            <div class="p-3 mt-2 rounded" style="background-color: #fef2f2; border: 1px solid #d64545; color: #991b1b; font-size: 13px;">
+              {{ selectedRejectedEvent.reject_reason }}
             </div>
           </div>
-          <div class="modal-footer bg-light border-0">
-            <button type="button" class="btn btn-secondary rounded-pill px-4" @click="selectedRejectedEvent = null">
+          <div class="modal-footer" style="border-top: 1px solid #e2e8f0;">
+            <button
+              type="button"
+              class="btn btn-sm px-3 py-1"
+              style="background-color: #e2e8f0; color: #0f172a; border-radius: 4px;"
+              @click="selectedRejectedEvent = null"
+            >
               Tutup
             </button>
           </div>
@@ -294,126 +241,244 @@
 
 <script setup>
 import { ref, reactive, computed } from 'vue'
-import BadgeStatus from '../../components/common/BadgeStatus.vue'
-import CountdownTimer from '../../components/common/CountdownTimer.vue'
 
 const filters = reactive({
   search: '',
   status: 'all',
-  category: 'all',
 })
 
 const currentPage = ref(1)
-const perPage = 5
 const selectedRejectedEvent = ref(null)
 
-// Dataset Mock Lengkap Event Panitia sesuai Bab 7.5 Dokumen Konsep
+const statusTabs = [
+  { label: 'Semua', value: 'all' },
+  { label: 'Draft', value: 'draft' },
+  { label: 'Menunggu Review', value: 'menunggu_review' },
+  { label: 'Tayang', value: 'tayang' },
+  { label: 'Ditolak', value: 'ditolak' },
+  { label: 'Selesai', value: 'selesai' },
+]
+
+// 6 Baris sesuai Figma 2002:969 (10 - Kelola Event)
 const myEvents = ref([
   {
-    id: 1,
-    title: 'Seminar Nasional Artificial Intelligence & Masa Depan Pendidikan',
-    category: { name: 'Seminar' },
-    location: 'Auditorium Utama UNS, Surakarta',
-    start_time: '2026-12-15T09:00:00+07:00',
-    quota: 250,
-    remaining_quota: 247,
-    status: 'tayang',
+    id: 3,
+    title: 'Pelatihan Pemrograman Web Modern',
+    category: 'Workshop',
+    date_label: '10 Mei 2026',
+    filled: 0,
+    quota: 40,
+    status: 'draft',
+    countdown: '05:12:30',
   },
   {
-    id: 9,
-    title: 'Open Recruitment Panitia Dies Natalis 2026',
-    category: { name: 'Perekrutan' },
-    location: 'Student Center UNS',
-    start_time: '2026-12-01T09:00:00+07:00',
-    quota: 150,
-    remaining_quota: 150,
+    id: 2,
+    title: 'Workshop UI/UX dengan Figma',
+    category: 'Workshop',
+    date_label: '25 April 2026',
+    filled: 0,
+    quota: 60,
     status: 'menunggu_review',
   },
   {
-    id: 12,
-    title: 'Workshop Cloud Native & Kubernetes Essentials',
-    category: { name: 'Workshop' },
-    location: 'Lab Jaringan Komputer Informatika UNS',
-    start_time: '2026-12-10T09:00:00+07:00',
-    quota: 40,
-    remaining_quota: 40,
-    status: 'draft',
-    payment_deadline: new Date(Date.now() + 18 * 60 * 60 * 1000).toISOString(),
-  },
-  {
-    id: 11,
-    title: 'Gathering Komunitas Game Liar Solo',
-    category: { name: 'Komunitas' },
-    location: 'Warkop Area Manahan, Surakarta',
-    start_time: '2026-11-30T10:00:00+07:00',
-    quota: 30,
-    remaining_quota: 30,
-    status: 'ditolak',
-    reject_reason: 'Deskripsi acara tidak jelas dan lokasi tidak memenuhi syarat perizinan kampus.',
-  },
-  {
-    id: 3,
-    title: 'Kompetisi Desain Poster Digital Kreatif Mahasiswa Nasional',
-    category: { name: 'Lomba' },
-    location: 'Online via Zoom Meeting',
-    start_time: '2026-11-01T08:00:00+07:00',
+    id: 1,
+    title: 'Seminar Nasional AI untuk Pendidikan',
+    category: 'Seminar',
+    date_label: '18 April 2026',
+    filled: 24,
     quota: 100,
-    remaining_quota: 0,
+    status: 'tayang',
+  },
+  {
+    id: 5,
+    title: 'Turnamen Game Kampus Tanpa Izin Dekanat',
+    category: 'Kompetisi',
+    date_label: '01 April 2026',
+    filled: 0,
+    quota: 32,
+    status: 'ditolak',
+    reject_reason: 'Belum melampirkan surat izin kegiatan resmi dari Kemahasiswaan / Dekanat.',
+  },
+  {
+    id: 4,
+    title: 'Lomba Desain Poster Dies Natalis',
+    category: 'Lomba',
+    date_label: '02 Mei 2026',
+    filled: 50,
+    quota: 50,
+    status: 'kuota_habis',
+  },
+  {
+    id: 6,
+    title: 'Webinar Pengenalan Cloud Computing',
+    category: 'Seminar',
+    date_label: '15 Februari 2026',
+    filled: 150,
+    quota: 150,
     status: 'selesai',
   },
 ])
 
 const filteredEvents = computed(() => {
   return myEvents.value.filter((item) => {
-    // 1. Search
     if (filters.search.trim()) {
       const q = filters.search.toLowerCase()
-      const matchTitle = item.title?.toLowerCase().includes(q)
-      const matchLoc = item.location?.toLowerCase().includes(q)
-      if (!matchTitle && !matchLoc) return false
+      if (!item.title.toLowerCase().includes(q) && !item.category.toLowerCase().includes(q)) {
+        return false
+      }
     }
-
-    // 2. Status
     if (filters.status !== 'all') {
       if (item.status !== filters.status) return false
     }
-
-    // 3. Category
-    if (filters.category !== 'all') {
-      if (item.category?.name !== filters.category) return false
-    }
-
     return true
   })
 })
-
-const totalPages = computed(() => {
-  return Math.ceil(filteredEvents.value.length / perPage) || 1
-})
-
-const paginatedEvents = computed(() => {
-  const start = (currentPage.value - 1) * perPage
-  return filteredEvents.value.slice(start, start + perPage)
-})
-
-function resetFilters() {
-  filters.search = ''
-  filters.status = 'all'
-  filters.category = 'all'
-  currentPage.value = 1
-}
-
-function showRejectModal(event) {
-  selectedRejectedEvent.value = event
-}
-
-function formatDateTime(isoString) {
-  if (!isoString) return '-'
-  const d = new Date(isoString)
-  return new Intl.DateTimeFormat('id-ID', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-  }).format(d)
-}
 </script>
+
+<style scoped>
+.eh-btn-indigo {
+  background-color: #4f46e5;
+  border-color: #4f46e5;
+  color: #ffffff;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.eh-btn-indigo:hover {
+  background-color: #4338ca;
+  border-color: #4338ca;
+  color: #ffffff;
+}
+
+.eh-filter-card {
+  border: 1px solid #c7d2fe;
+  border-radius: 4px;
+}
+
+.eh-search-input {
+  border: 1px solid #c7d2fe;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #0f172a;
+  padding: 7px 12px;
+}
+
+.eh-search-input:focus {
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.15);
+}
+
+.eh-filter-pill {
+  background-color: #eef2ff;
+  border: 1px solid #c7d2fe;
+  color: #3730a3;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 4px;
+  padding: 6px 12px;
+}
+
+.eh-filter-pill.active {
+  background-color: #4f46e5;
+  border-color: #4f46e5;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.eh-table-card {
+  border: 1px solid #c7d2fe;
+  border-radius: 4px;
+}
+
+.eh-table thead tr {
+  background-color: #e0e7ff;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.eh-table thead th {
+  background-color: #e0e7ff;
+  color: #3730a3;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  padding: 12px 16px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.eh-table tbody td {
+  padding: 16px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.eh-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.eh-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 16px;
+}
+
+.eh-badge-green {
+  background-color: #22a55b;
+  color: #ffffff;
+}
+
+.eh-badge-blue {
+  background-color: #3b82f6;
+  color: #ffffff;
+}
+
+.eh-badge-yellow {
+  background-color: #f5c542;
+  color: #0f172a;
+}
+
+.eh-badge-darkgray {
+  background-color: #4b4b4b;
+  color: #ffffff;
+}
+
+.eh-badge-red {
+  background-color: #d64545;
+  color: #ffffff;
+}
+
+.eh-badge-gray {
+  background-color: #9e9e9e;
+  color: #ffffff;
+}
+
+.eh-page-btn {
+  background-color: #e2e8f0;
+  border: 1px solid #c7d2fe;
+  color: #94a3b8;
+  font-size: 12px;
+  border-radius: 4px;
+  padding: 6px 12px;
+}
+
+.eh-page-num {
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.eh-page-num.active {
+  background-color: #4f46e5;
+  color: #ffffff;
+  border: none;
+}
+</style>

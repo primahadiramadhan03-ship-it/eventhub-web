@@ -793,13 +793,43 @@ const handleSubmit = async (proceedToPayment = false) => {
 </template>
 
 <style scoped>
+.event-create-view :deep(.card) {
+  border: 1px solid #c7d2fe !important;
+  border-radius: 4px !important;
+  box-shadow: none !important;
+}
+
+.event-create-view :deep(.form-control),
+.event-create-view :deep(.form-select) {
+  border: 1px solid #c7d2fe;
+  border-radius: 4px;
+  color: #0f172a;
+}
+
+.event-create-view :deep(.form-control:focus),
+.event-create-view :deep(.form-select:focus) {
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.15);
+}
+
+.event-create-view :deep(.btn-primary) {
+  background-color: #4f46e5;
+  border-color: #4f46e5;
+}
+
+.event-create-view :deep(.btn-primary:hover) {
+  background-color: #4338ca;
+  border-color: #4338ca;
+}
+
 .field-card {
   transition: all 0.2s ease-in-out;
-  border-color: #dee2e6;
+  border: 1px solid #c7d2fe !important;
+  background-color: #eef2ff;
 }
+
 .field-card:hover {
-  border-color: #0d6efd;
-  box-shadow: 0 4px 12px rgba(13, 110, 253, 0.08);
+  border-color: #4f46e5 !important;
 }
 </style>
 

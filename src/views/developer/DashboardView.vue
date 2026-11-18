@@ -1,172 +1,108 @@
 <template>
-  <div class="developer-dashboard pb-5">
-    <!-- ======================================================================= -->
-    <!-- 1. WELCOME BANNER DEVELOPER                                             -->
-    <!-- ======================================================================= -->
-    <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-gradient-developer text-white">
-      <div class="row align-items-center g-3">
-        <div class="col-md-8">
-          <span class="badge bg-white bg-opacity-25 px-3 py-1 rounded-pill small mb-2">
-            ⚙️ Administrator & Moderasi Platform
-          </span>
-          <h2 class="h3 fw-bold mb-1">
-            Dashboard Developer — EventHub
-          </h2>
-          <p class="opacity-90 small mb-0">
-            Pusat kendali persetujuan penayangan event kampus, verifikasi bukti bayar sewa, dan pengelolaan data kategori.
-          </p>
-        </div>
-        <div class="col-md-4 text-md-end">
-          <router-link to="/admin/review" class="btn btn-light fw-bold px-4 py-2 rounded-pill shadow-sm">
-            📋 Buka Antrean Review ({{ reviewQueue.length }})
-          </router-link>
-        </div>
-      </div>
+  <div class="eh-dev-dashboard pb-5">
+    <!-- 1. TOP HEADER (Figma 2002:1951) -->
+    <div class="mb-4">
+      <h1 class="fw-bold mb-1" style="font-size: 24px; color: #0f172a;">Dashboard Developer</h1>
+      <p class="mb-0" style="font-size: 14px; color: #64748b;">
+        Ringkasan operasional moderasi event dan transaksi biaya penayangan platform.
+      </p>
     </div>
 
-    <!-- ======================================================================= -->
-    <!-- 2. METRIK UTAMA PLATFORM                                                -->
-    <!-- ======================================================================= -->
+    <!-- 2. 4 STAT CARDS (Figma 2002:1958) -->
     <div class="row g-3 mb-4">
       <div class="col-6 col-lg-3">
-        <div class="card border-0 shadow-sm rounded-4 p-3 h-100 bg-white">
-          <div class="d-flex align-items-center justify-content-between mb-2">
-            <span class="text-secondary small fw-semibold">Butuh Review</span>
-            <span class="fs-4">⏳</span>
-          </div>
-          <div class="display-6 fw-bold text-danger">{{ reviewQueue.length }}</div>
-          <small class="text-danger fw-semibold" style="font-size: 0.75rem;">Perlu ditinjau Developer</small>
+        <div class="eh-stat-card eh-border-indigo bg-white h-100">
+          <div class="eh-stat-label">ANTREAN REVIEW</div>
+          <div class="eh-stat-value">6</div>
+          <div class="eh-stat-sub">Event menunggu moderasi</div>
         </div>
       </div>
 
       <div class="col-6 col-lg-3">
-        <div class="card border-0 shadow-sm rounded-4 p-3 h-100 bg-white">
-          <div class="d-flex align-items-center justify-content-between mb-2">
-            <span class="text-secondary small fw-semibold">Event Tayang Aktif</span>
-            <span class="fs-4">🟢</span>
-          </div>
-          <div class="display-6 fw-bold text-success">8</div>
-          <small class="text-muted" style="font-size: 0.75rem;">Sedang tampil di publik</small>
+        <div class="eh-stat-card eh-border-purple bg-white h-100">
+          <div class="eh-stat-label">EVENT TAYANG</div>
+          <div class="eh-stat-value">18</div>
+          <div class="eh-stat-sub">Aktif di katalog publik</div>
         </div>
       </div>
 
       <div class="col-6 col-lg-3">
-        <div class="card border-0 shadow-sm rounded-4 p-3 h-100 bg-white">
-          <div class="d-flex align-items-center justify-content-between mb-2">
-            <span class="text-secondary small fw-semibold">Sewa Terverifikasi</span>
-            <span class="fs-4">💳</span>
-          </div>
-          <div class="display-6 fw-bold text-primary">Rp450.000</div>
-          <small class="text-muted" style="font-size: 0.75rem;">9 transaksi x Rp50.000</small>
+        <div class="eh-stat-card eh-border-indigo bg-white h-100">
+          <div class="eh-stat-label">TOTAL TRANSAKSI</div>
+          <div class="eh-stat-value">24</div>
+          <div class="eh-stat-sub">Pembayaran biaya sewa</div>
         </div>
       </div>
 
       <div class="col-6 col-lg-3">
-        <div class="card border-0 shadow-sm rounded-4 p-3 h-100 bg-white">
-          <div class="d-flex align-items-center justify-content-between mb-2">
-            <span class="text-secondary small fw-semibold">Total Pengguna</span>
-            <span class="fs-4">👥</span>
-          </div>
-          <div class="display-6 fw-bold text-dark">6 Akun</div>
-          <small class="text-muted" style="font-size: 0.75rem;">3 Peserta, 2 Panitia, 1 Dev</small>
+        <div class="eh-stat-card eh-border-purple bg-white h-100">
+          <div class="eh-stat-label">PENDAPATAN SEWA</div>
+          <div class="eh-stat-value" style="font-size: 24px;">Rp 1.200.000</div>
+          <div class="eh-stat-sub">Flat listing fee Rp 50.000</div>
         </div>
       </div>
     </div>
 
-    <!-- ======================================================================= -->
-    <!-- 3. TABEL ANTREAN REVIEW EVENT TERBARU                                  -->
-    <!-- ======================================================================= -->
-    <div class="row g-4 mb-4">
-      <div class="col-lg-8">
-        <div class="card border-0 shadow-sm rounded-4 overflow-hidden h-100 bg-white">
-          <div class="card-header bg-white p-4 border-bottom d-flex align-items-center justify-content-between">
-            <div>
-              <h5 class="fw-bold text-dark mb-0">Antrean Review Event Terbaru</h5>
-              <small class="text-secondary">Event yang sudah dibayar sewa dan siap ditinjau kelayakannya</small>
-            </div>
-            <router-link to="/admin/review" class="btn btn-outline-primary btn-sm rounded-pill px-3">
-              Semua Antrean →
-            </router-link>
-          </div>
-
-          <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-              <thead class="table-light">
-                <tr>
-                  <th class="ps-4">Event & Penyelenggara</th>
-                  <th>Kategori</th>
-                  <th>Kapasitas</th>
-                  <th>Status Sewa</th>
-                  <th class="text-end pe-4">Tindakan</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="item in reviewQueue" :key="item.id">
-                  <td class="ps-4">
-                    <div class="fw-semibold text-dark text-truncate" style="max-width: 250px;">
-                      {{ item.title }}
-                    </div>
-                    <small class="text-muted">Diajukan oleh: {{ item.organizer }}</small>
-                  </td>
-                  <td>
-                    <span class="badge bg-light text-dark border">{{ item.category }}</span>
-                  </td>
-                  <td class="small">{{ item.quota }} Peserta</td>
-                  <td>
-                    <span class="badge bg-success-subtle text-success border border-success-subtle small">
-                      Lunas Rp50.000
-                    </span>
-                  </td>
-                  <td class="text-end pe-4">
-                    <router-link
-                      to="/admin/review"
-                      class="btn btn-primary btn-sm rounded-pill px-3 fw-semibold"
-                    >
-                      Tinjau Acara →
-                    </router-link>
-                  </td>
-                </tr>
-                <tr v-if="reviewQueue.length === 0">
-                  <td colspan="5" class="text-center py-4 text-muted">
-                    Tidak ada antrean review event saat ini.
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+    <!-- 3. ANTREAN TERBARU TABLE SECTION (Figma 2002:2000) -->
+    <div class="eh-table-card bg-white overflow-hidden">
+      <div class="d-flex align-items-center justify-content-between px-4 py-3 flex-wrap gap-2" style="border-bottom: 1px solid #e2e8f0;">
+        <div>
+          <h2 class="fw-bold mb-0" style="font-size: 16px; color: #0f172a;">Antrean Terbaru</h2>
+          <div style="font-size: 12px; color: #64748b;">
+            Event yang telah membayar listing fee dan menunggu verifikasi
           </div>
         </div>
+        <router-link
+          to="/admin/review"
+          class="fw-medium text-decoration-none d-inline-flex align-items-center gap-1"
+          style="font-size: 14px; color: #4f46e5;"
+        >
+          <span>Lihat Semua Antrean</span>
+          <span>→</span>
+        </router-link>
       </div>
 
-      <!-- Kolom Kanan: Verifikasi Pembayaran Masuk Terbaru -->
-      <div class="col-lg-4">
-        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
-          <div class="d-flex align-items-center justify-content-between mb-3">
-            <h5 class="fw-bold text-dark mb-0">Sewa Terbaru</h5>
-            <router-link to="/admin/payments" class="btn btn-link btn-sm text-decoration-none p-0 text-primary">
-              Lihat Semua
-            </router-link>
-          </div>
-
-          <div class="d-flex flex-column gap-3">
-            <div
-              v-for="pay in recentPayments"
-              :key="pay.id"
-              class="p-3 rounded-3 border bg-light"
-            >
-              <div class="d-flex justify-content-between align-items-center mb-1">
-                <span class="badge bg-success font-monospace small">TERVERIFIKASI</span>
-                <span class="fw-bold text-dark font-monospace small">Rp50.000</span>
-              </div>
-              <div class="fw-semibold small text-dark text-truncate" :title="pay.event_title">
-                {{ pay.event_title }}
-              </div>
-              <div class="d-flex justify-content-between text-muted mt-2" style="font-size: 0.72rem;">
-                <span>Ref: {{ pay.ref }}</span>
-                <span>{{ pay.date }}</span>
-              </div>
-            </div>
-          </div>
-        </div>
+      <div class="table-responsive">
+        <table class="table mb-0 align-middle eh-table">
+          <thead>
+            <tr>
+              <th class="ps-4">JUDUL EVENT</th>
+              <th>PANITIA</th>
+              <th>KATEGORI</th>
+              <th>WAKTU BAYAR</th>
+              <th>STATUS</th>
+              <th class="text-end pe-4">AKSI</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="item in recentQueue" :key="item.id">
+              <td class="ps-4 fw-normal" style="font-size: 14px; color: #0f172a;">
+                {{ item.title }}
+              </td>
+              <td style="font-size: 14px; color: #64748b;">
+                {{ item.organizer }}
+              </td>
+              <td>
+                <span class="eh-category-chip">{{ item.category }}</span>
+              </td>
+              <td style="font-size: 12px; color: #64748b;">
+                {{ item.paid_at }}
+              </td>
+              <td>
+                <span class="eh-badge eh-badge-blue">Menunggu Review</span>
+              </td>
+              <td class="text-end pe-4">
+                <router-link
+                  :to="`/admin/review/${item.id}`"
+                  class="btn eh-btn-indigo btn-sm px-3 py-1 fw-bold"
+                  style="font-size: 12px;"
+                >
+                  Tinjau
+                </router-link>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
@@ -175,47 +111,141 @@
 <script setup>
 import { ref } from 'vue'
 
-const reviewQueue = ref([
-  {
-    id: 9,
-    title: 'Open Recruitment Panitia Dies Natalis 2026',
-    organizer: 'Panitia Demo (Himpunan)',
-    category: 'Perekrutan',
-    quota: 150,
-  },
-  {
-    id: 10,
-    title: 'Pelatihan Public Speaking & Pitching Mahasiswa',
-    organizer: 'Panitia Himpunan Mahasiswa',
-    category: 'Workshop',
-    quota: 50,
-  },
-])
-
-const recentPayments = ref([
+// 4 baris antrean terbaru sesuai Figma 2002:2027 (17 - Dashboard Developer)
+const recentQueue = ref([
   {
     id: 1,
-    event_title: 'Open Recruitment Panitia Dies Natalis 2026',
-    ref: 'TRX-20261112-009',
-    date: '12 Nov 2026',
+    title: 'Seminar Nasional AI & Karir Digital',
+    organizer: 'BEM Fasilkom UI',
+    category: 'Seminar',
+    paid_at: '14 Okt 2026, 10:15',
   },
   {
     id: 2,
-    event_title: 'Pelatihan Public Speaking Mahasiswa',
-    ref: 'TRX-20261113-010',
-    date: '13 Nov 2026',
+    title: 'Workshop UI/UX Design System 2026',
+    organizer: 'HIMASISVO Unair',
+    category: 'Workshop',
+    paid_at: '14 Okt 2026, 09:40',
   },
   {
     id: 3,
-    event_title: 'Seminar Nasional AI & Pendidikan',
-    ref: 'TRX-20261111-001',
-    date: '11 Nov 2026',
+    title: 'Lomba Inovasi Startup Mahasiswa',
+    organizer: 'UKM Startup Hub ITB',
+    category: 'Lomba',
+    paid_at: '14 Okt 2026, 08:22',
+  },
+  {
+    id: 4,
+    title: 'Open Recruitment Panitia Dies Natalis 40',
+    organizer: 'Panitia Dies Natalis',
+    category: 'Kepanitiaan',
+    paid_at: '13 Okt 2026, 21:05',
   },
 ])
 </script>
 
 <style scoped>
-.bg-gradient-developer {
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+.eh-stat-card {
+  border: 1px solid #c7d2fe;
+  border-radius: 4px;
+  padding: 18px 20px;
+}
+
+.eh-border-indigo {
+  border-left: 4px solid #4f46e5;
+}
+
+.eh-border-purple {
+  border-left: 4px solid #7c3aed;
+}
+
+.eh-stat-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #64748b;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.eh-stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 36px;
+  margin-bottom: 4px;
+}
+
+.eh-stat-sub {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.eh-table-card {
+  border: 1px solid #c7d2fe;
+  border-radius: 4px;
+}
+
+.eh-table thead tr {
+  background-color: #e0e7ff;
+  border-bottom: 1px solid #c7d2fe;
+}
+
+.eh-table thead th {
+  background-color: #e0e7ff;
+  color: #3730a3;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  padding: 14px 20px;
+  border-bottom: 1px solid #c7d2fe;
+}
+
+.eh-table tbody td {
+  padding: 16px 20px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.eh-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.eh-category-chip {
+  display: inline-block;
+  background-color: #eef2ff;
+  border: 1px solid #c7d2fe;
+  color: #0f172a;
+  font-size: 12px;
+  padding: 2px 10px;
+  border-radius: 4px;
+}
+
+.eh-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 16px;
+}
+
+.eh-badge-blue {
+  background-color: #3b82f6;
+  color: #ffffff;
+}
+
+.eh-btn-indigo {
+  background-color: #4f46e5;
+  border-color: #4f46e5;
+  color: #ffffff;
+  border-radius: 4px;
+}
+
+.eh-btn-indigo:hover {
+  background-color: #4338ca;
+  border-color: #4338ca;
+  color: #ffffff;
 }
 </style>

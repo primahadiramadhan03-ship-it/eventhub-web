@@ -363,6 +363,30 @@ const handleUpdate = async () => {
         <button type="button" class="btn-close" @click="successMessage = ''" aria-label="Close"></button>
       </div>
 
+      <!-- Banner Status Draft (Figma 2002:1615 - 12 Edit Event) -->
+      <div
+        v-if="currentStatus === 'draft'"
+        class="bg-white d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4 p-3"
+        style="border: 2px solid #f5c542; border-radius: 4px;"
+      >
+        <div class="d-flex align-items-center gap-2">
+          <span
+            class="d-inline-block rounded-circle"
+            style="width: 10px; height: 10px; background-color: #f5c542;"
+          ></span>
+          <span class="fw-semibold" style="font-size: 14px; color: #0f172a;">
+            Status: Draft — Sisa waktu bayar: <span class="font-monospace">05:12:30</span>
+          </span>
+        </div>
+        <router-link
+          :to="`/organizer/events/${eventId}/payment`"
+          class="btn btn-sm text-white fw-semibold px-3 py-1"
+          style="background-color: #4f46e5; border-radius: 4px; font-size: 12px;"
+        >
+          Lanjut ke Pembayaran Sewa →
+        </router-link>
+      </div>
+
       <!-- Banner Status Ditolak jika ada (BR-13) -->
       <div v-if="currentStatus === 'ditolak'" class="alert alert-danger border-danger d-flex align-items-start mb-4">
         <i class="bi bi-x-circle-fill fs-4 text-danger me-3 mt-1"></i>
@@ -749,4 +773,35 @@ const handleUpdate = async () => {
     </div>
   </div>
 </template>
+
+<style scoped>
+.event-edit-view :deep(.card) {
+  border: 1px solid #c7d2fe !important;
+  border-radius: 4px !important;
+  box-shadow: none !important;
+}
+
+.event-edit-view :deep(.form-control),
+.event-edit-view :deep(.form-select) {
+  border: 1px solid #c7d2fe;
+  border-radius: 4px;
+  color: #0f172a;
+}
+
+.event-edit-view :deep(.form-control:focus),
+.event-edit-view :deep(.form-select:focus) {
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.15);
+}
+
+.event-edit-view :deep(.btn-primary) {
+  background-color: #4f46e5;
+  border-color: #4f46e5;
+}
+
+.event-edit-view :deep(.btn-primary:hover) {
+  background-color: #4338ca;
+  border-color: #4338ca;
+}
+</style>
 

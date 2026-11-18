@@ -1,188 +1,3 @@
-<template>
-  <div class="ticket-page py-4">
-    <div class="container">
-      <!-- Navigasi & Aksi Atas (Hidden saat Print) -->
-      <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2 no-print">
-        <router-link to="/my-registrations" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
-          ← Riwayat Pendaftaran
-        </router-link>
-        <div class="d-flex gap-2">
-          <button class="btn btn-outline-primary btn-sm rounded-pill px-3" @click="printTicket">
-            🖨️ Cetak / Simpan PDF
-          </button>
-          <router-link v-if="ticket?.event" :to="`/events/${ticket.event.id}`" class="btn btn-light btn-sm rounded-pill px-3 border">
-            Detail Acara
-          </router-link>
-        </div>
-      </div>
-
-      <!-- LOADING STATE -->
-      <div v-if="loading" class="text-center py-5 no-print">
-        <div class="spinner-border text-primary" role="status"></div>
-        <p class="text-muted mt-2">Memuat tiket digital...</p>
-      </div>
-
-      <!-- ERROR / NOT FOUND STATE -->
-      <div v-else-if="!ticket || errorMessage" class="card border-0 shadow-sm rounded-4 p-5 text-center my-4 no-print">
-        <div class="display-3 mb-3">🎫</div>
-        <h3 class="fw-bold mb-2">Tiket Tidak Ditemukan</h3>
-        <p class="text-secondary mb-4">
-          {{ errorMessage || 'Data pendaftaran atau tiket tidak ditemukan pada akun Anda.' }}
-        </p>
-        <div>
-          <router-link to="/my-registrations" class="btn btn-primary px-4 rounded-pill">
-            Buka Riwayat Pendaftaran
-          </router-link>
-        </div>
-      </div>
-
-      <!-- ===================================================================== -->
-      <!-- TAMPILAN TIKET DIGITAL RESMI (Boarding Pass Style - Bab 9.2 & US-07)  -->
-      <!-- ===================================================================== -->
-      <div v-else class="row justify-content-center">
-        <div class="col-lg-8">
-          <div class="ticket-card shadow-lg rounded-4 overflow-hidden bg-white border">
-            <!-- TICKET HEADER -->
-            <div class="ticket-header bg-primary text-white p-4">
-              <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-                <div class="d-flex align-items-center gap-2">
-                  <span class="fs-4">🎟️</span>
-                  <div>
-                    <h5 class="fw-bold mb-0 text-uppercase tracking-wider">EventHub E-Ticket</h5>
-                    <small class="opacity-75">Tiket Masuk Resmi & Bukti Pendaftaran</small>
-                  </div>
-                </div>
-                <div>
-                  <span
-                    v-if="ticket.status === 'attended'"
-                    class="badge bg-success px-3 py-2 rounded-pill fw-bold"
-                  >
-                    ✓ HADIR (CHECKED-IN)
-                  </span>
-                  <span
-                    v-else
-                    class="badge bg-light text-primary px-3 py-2 rounded-pill fw-bold"
-                  >
-                    ● TERDAFTAR (MENUNGGU ACARA)
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <!-- TICKET MAIN BODY -->
-            <div class="ticket-body p-4 p-md-5">
-              <!-- Judul Event & Kategori -->
-              <div class="mb-4">
-                <span class="badge bg-primary-subtle text-primary mb-2 px-3 py-1 rounded-pill small">
-                  {{ ticket.event?.category?.name || 'Seminar' }}
-                </span>
-                <h2 class="h3 fw-bold text-dark mb-1">
-                  {{ ticket.event?.title || 'Event Kampus' }}
-                </h2>
-              </div>
-
-              <!-- Grid Waktu & Lokasi -->
-              <div class="row g-3 py-3 border-top border-bottom bg-light bg-opacity-50 rounded-3 px-2 mb-4">
-                <div class="col-sm-6">
-                  <div class="d-flex align-items-center">
-                    <span class="fs-4 me-3">🗓️</span>
-                    <div>
-                      <div class="text-secondary small">Jadwal Acara:</div>
-                      <div class="fw-bold text-dark small">{{ formatDateTime(ticket.event?.start_time) }}</div>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-sm-6">
-                  <div class="d-flex align-items-center">
-                    <span class="fs-4 me-3">📍</span>
-                    <div>
-                      <div class="text-secondary small">Lokasi Acara:</div>
-                      <div class="fw-bold text-dark small">{{ ticket.event?.location || 'Kampus UNS' }}</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- STUB SECTION / KODE TIKET & QR -->
-              <div class="ticket-stub p-4 rounded-3 text-center mb-4">
-                <div class="text-secondary small text-uppercase fw-bold mb-1">Kode Tiket Resmi</div>
-                <div class="display-6 fw-bold text-primary font-monospace tracking-wide mb-2">
-                  {{ ticket.ticket_code }}
-                </div>
-                <button class="btn btn-outline-primary btn-sm rounded-pill px-3 mb-3 no-print" @click="copyTicketCode">
-                  📋 {{ copySuccess ? 'Kode Disalin!' : 'Salin Kode Tiket' }}
-                </button>
-
-                <!-- Simulasi Barcode Visual -->
-                <div class="barcode-container my-3 mx-auto p-2 bg-white rounded border" style="max-width: 320px;">
-                  <div class="barcode-lines"></div>
-                  <div class="small font-monospace text-muted mt-1">{{ ticket.ticket_code }}</div>
-                </div>
-
-                <p class="small text-muted mb-0">
-                  Tunjukkan kode tiket atau barcode ini kepada panitia saat presensi / check-in di lokasi acara.
-                </p>
-              </div>
-
-              <!-- IDENTITAS PESERTA -->
-              <div class="row g-3 mb-4">
-                <div class="col-sm-6">
-                  <div class="p-3 bg-light rounded-3 h-100">
-                    <div class="text-secondary small">Nama Peserta:</div>
-                    <div class="fw-bold text-dark">{{ auth.user?.name || 'Peserta EventHub' }}</div>
-                  </div>
-                </div>
-                <div class="col-sm-6">
-                  <div class="p-3 bg-light rounded-3 h-100">
-                    <div class="text-secondary small">Email:</div>
-                    <div class="fw-bold text-dark">{{ auth.user?.email || 'peserta@eventhub.test' }}</div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- REKAP JAWABAN FORMULIR PENDAFTARAN DINAMIS -->
-              <div v-if="ticket.answers && ticket.answers.length" class="mt-4 pt-3 border-top">
-                <h6 class="fw-bold text-dark mb-3">Data Formulir Tambahan Peserta:</h6>
-                <div class="table-responsive">
-                  <table class="table table-sm table-bordered mb-0">
-                    <thead class="table-light">
-                      <tr>
-                        <th style="width: 45%;">Pertanyaan</th>
-                        <th>Jawaban</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr v-for="ans in ticket.answers" :key="ans.id">
-                        <td class="text-secondary">{{ ans.field?.label || `Pertanyaan #${ans.form_field_id}` }}</td>
-                        <td class="fw-semibold text-dark">{{ ans.answer }}</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-
-            <!-- TICKET FOOTER -->
-            <div class="ticket-footer bg-light p-3 text-center border-top text-muted small">
-              Diterbitkan secara digital oleh EventHub MPTI • Waktu Registrasi: {{ formatDateTime(ticket.registered_at) }}
-            </div>
-          </div>
-
-          <!-- Bottom Action Buttons (Hidden saat Print) -->
-          <div class="d-flex justify-content-center gap-3 mt-4 no-print">
-            <button class="btn btn-primary px-4 py-2 rounded-pill fw-bold" @click="printTicket">
-              🖨️ Cetak Tiket Sekarang
-            </button>
-            <router-link to="/my-registrations" class="btn btn-outline-secondary px-4 py-2 rounded-pill">
-              Kembali ke Daftar Tiket Saya
-            </router-link>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
@@ -191,150 +6,245 @@ import { eventService } from '../../services/eventService'
 
 const route = useRoute()
 const auth = useAuthStore()
+const registrationId = route.params.id
 
-const ticket = ref(null)
-const loading = ref(true)
-const errorMessage = ref('')
-const copySuccess = ref(false)
+const statusMode = ref('Terdaftar') // 'Terdaftar' | 'Hadir'
 
-// Sample Dummy Ticket Fallback untuk keperluan Slicing UI
-const DUMMY_TICKET = {
-  id: 1,
-  user_id: 1,
-  event_id: 1,
-  status: 'registered',
-  ticket_code: 'EVT-1-K3M9QX2A',
-  registered_at: '2026-11-12T09:15:00+07:00',
-  checked_in_at: null,
-  event: {
-    id: 1,
-    title: 'Seminar Nasional Artificial Intelligence & Masa Depan Pendidikan',
-    location: 'Auditorium Utama UNS, Surakarta',
-    start_time: '2026-12-15T09:00:00+07:00',
-    category: { id: 1, name: 'Seminar' },
-  },
-  answers: [
-    {
-      id: 1,
-      form_field_id: 11,
-      answer: 'Universitas Sebelas Maret',
-      field: { id: 11, label: 'Asal Universitas / Instansi' },
-    },
-    {
-      id: 2,
-      form_field_id: 12,
-      answer: '081234567890',
-      field: { id: 12, label: 'Nomor WhatsApp Aktif' },
-    },
-  ],
-}
+// Data Tiket sesuai Figma Mockup 2002:710 & 2002:4172
+const ticket = ref({
+  id: registrationId,
+  ticket_code: 'EVT-12-A8K2P9QX',
+  event_title: 'Seminar Nasional AI untuk Pendidikan',
+  organizer: 'Himpunan Mahasiswa Informatika',
+  participant_name: auth.userName || 'Aditya Pratama',
+  schedule_text: '18 April 2026 • 09:00 WIB',
+  location_text: 'Aula Gedung A, Kampus Pusat, Jl. Imam Bonjol No. 207, Semarang',
+  checked_in_at: '18 April 2026 • 08:42 WIB',
+})
 
-function formatDateTime(isoString) {
-  if (!isoString) return '-'
-  const date = new Date(isoString)
-  return new Intl.DateTimeFormat('id-ID', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  }).format(date) + ' WIB'
-}
-
-function copyTicketCode() {
-  if (!ticket.value?.ticket_code) return
-  navigator.clipboard.writeText(ticket.value.ticket_code)
-  copySuccess.value = true
-  setTimeout(() => {
-    copySuccess.value = false
-  }, 2500)
-}
-
-function printTicket() {
-  window.print()
-}
-
-async function loadTicketData() {
-  loading.value = true
-  errorMessage.value = ''
-  const ticketId = route.params.id
-
+onMounted(async () => {
   try {
-    const res = await eventService.getRegistrationDetail(ticketId)
-    if (res.data) {
-      ticket.value = res.data
-    } else {
-      ticket.value = DUMMY_TICKET
+    const res = await eventService.getRegistrationDetail(registrationId)
+    if (res && res.data) {
+      const d = res.data
+      ticket.value = {
+        ...ticket.value,
+        ticket_code: d.ticket_code || ticket.value.ticket_code,
+        event_title: d.event?.title || ticket.value.event_title,
+        location_text: d.event?.location || ticket.value.location_text,
+        participant_name: d.user?.name || auth.userName || 'Aditya Pratama',
+      }
+      if (d.status === 'attended') {
+        statusMode.value = 'Hadir'
+      }
     }
   } catch {
-    // Demo Slicing Mode: gunakan data dummy
-    ticket.value = DUMMY_TICKET
-  } finally {
-    loading.value = false
+    // Fallback mockup
   }
-}
-
-onMounted(() => {
-  loadTicketData()
 })
+
+const handleDownload = () => {
+  window.print()
+}
 </script>
 
+<template>
+  <div class="ticket-mockup-page py-5 px-3">
+    <div class="mx-auto" style="max-width: 576px;">
+      <!-- Toggle Status Simulasi (Terdaftar vs Hadir sesuai Figma 2002:710 & 2002:4172) -->
+      <div class="d-flex justify-content-end mb-2 d-print-none">
+        <div class="btn-group btn-group-sm">
+          <button
+            type="button"
+            class="btn btn-sm py-0 px-2"
+            :style="
+              statusMode === 'Terdaftar'
+                ? 'background-color: #4f46e5; color: #fff;'
+                : 'background-color: #fff; border: 1px solid #c7d2fe; color: #0f172a;'
+            "
+            @click="statusMode = 'Terdaftar'"
+          >
+            Status: Terdaftar
+          </button>
+          <button
+            type="button"
+            class="btn btn-sm py-0 px-2"
+            :style="
+              statusMode === 'Hadir'
+                ? 'background-color: #4f46e5; color: #fff;'
+                : 'background-color: #fff; border: 1px solid #c7d2fe; color: #0f172a;'
+            "
+            @click="statusMode = 'Hadir'"
+          >
+            Status: Hadir
+          </button>
+        </div>
+      </div>
+
+      <!-- Ticket Card Centered (Figma 2002:733) -->
+      <div class="eh-ticket-card overflow-hidden">
+        <!-- Top Band #4F46E5 with white text (Figma 2002:734) -->
+        <div class="p-4" style="background-color: #4f46e5;">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span
+              class="badge rounded-pill text-white fw-semibold px-3 py-1"
+              :style="{
+                backgroundColor: statusMode === 'Hadir' ? '#9e9e9e' : '#22a55b',
+                fontSize: '12px',
+              }"
+            >
+              {{ statusMode }}
+            </span>
+            <span
+              class="font-monospace fw-bold text-white"
+              style="font-size: 14px; letter-spacing: 0.7px;"
+            >
+              {{ ticket.ticket_code }}
+            </span>
+          </div>
+
+          <h1 class="fw-bold text-white mb-1" style="font-size: 20px; line-height: 1.4;">
+            {{ ticket.event_title }}
+          </h1>
+          <div style="color: rgba(255, 255, 255, 0.8); font-size: 14px;">
+            {{ ticket.organizer }}
+          </div>
+        </div>
+
+        <!-- Ticket Body (Figma 2002:744) -->
+        <div class="p-4">
+          <div class="row g-3 pb-4 mb-4" style="border-bottom: 1px solid #e2e8f0;">
+            <div class="col-12 col-sm-6">
+              <div style="color: #64748b; font-size: 12px;">Nama Peserta</div>
+              <div class="fw-semibold" style="color: #0f172a; font-size: 14px;">
+                {{ ticket.participant_name }}
+              </div>
+            </div>
+            <div class="col-12 col-sm-6">
+              <div style="color: #64748b; font-size: 12px;">Jadwal Acara</div>
+              <div class="fw-semibold" style="color: #0f172a; font-size: 14px;">
+                {{ ticket.schedule_text }}
+              </div>
+            </div>
+            <div class="col-12">
+              <div style="color: #64748b; font-size: 12px;">Lokasi Venue</div>
+              <div style="color: #0f172a; font-size: 14px;">
+                {{ ticket.location_text }}
+              </div>
+            </div>
+            <!-- Info Waktu Check-in jika status Hadir (Figma 2002:4172) -->
+            <div v-if="statusMode === 'Hadir'" class="col-12">
+              <div
+                class="p-2 px-3 rounded-2 d-flex justify-content-between align-items-center"
+                style="background-color: #dcfce7; border: 1px solid #22a55b; color: #166534; font-size: 12px;"
+              >
+                <span>✓ Presensi Kehadiran Tercatat</span>
+                <strong class="font-monospace">{{ ticket.checked_in_at }}</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- Strict Functional QR Code Container (Figma 2002:758) -->
+          <div
+            class="p-4 rounded-2 text-center"
+            style="background-color: #eef2ff; border: 1px solid #c7d2fe;"
+          >
+            <div
+              class="bg-white d-inline-block p-3 rounded-2 mb-3"
+              style="border: 1px solid #e2e8f0;"
+            >
+              <!-- Clean Black on White QR SVG (160x160) -->
+              <svg
+                width="160"
+                height="160"
+                viewBox="0 0 160 160"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <rect width="160" height="160" fill="white" />
+                <!-- Top-left finder -->
+                <rect x="12" y="12" width="44" height="44" stroke="#0f172a" stroke-width="6" />
+                <rect x="24" y="24" width="20" height="20" fill="#0f172a" />
+                <!-- Top-right finder -->
+                <rect x="104" y="12" width="44" height="44" stroke="#0f172a" stroke-width="6" />
+                <rect x="116" y="24" width="20" height="20" fill="#0f172a" />
+                <!-- Bottom-left finder -->
+                <rect x="12" y="104" width="44" height="44" stroke="#0f172a" stroke-width="6" />
+                <rect x="24" y="116" width="20" height="20" fill="#0f172a" />
+                <!-- Data matrix pattern -->
+                <rect x="68" y="16" width="8" height="8" fill="#0f172a" />
+                <rect x="84" y="16" width="8" height="16" fill="#0f172a" />
+                <rect x="68" y="32" width="16" height="8" fill="#0f172a" />
+                <rect x="68" y="48" width="8" height="16" fill="#0f172a" />
+                <rect x="84" y="48" width="8" height="8" fill="#0f172a" />
+                <rect x="16" y="68" width="16" height="8" fill="#0f172a" />
+                <rect x="40" y="68" width="8" height="16" fill="#0f172a" />
+                <rect x="56" y="68" width="24" height="8" fill="#0f172a" />
+                <rect x="88" y="68" width="16" height="16" fill="#0f172a" />
+                <rect x="112" y="68" width="8" height="8" fill="#0f172a" />
+                <rect x="128" y="68" width="20" height="8" fill="#0f172a" />
+                <rect x="16" y="84" width="8" height="8" fill="#0f172a" />
+                <rect x="56" y="84" width="8" height="16" fill="#0f172a" />
+                <rect x="72" y="84" width="8" height="8" fill="#0f172a" />
+                <rect x="112" y="84" width="16" height="8" fill="#0f172a" />
+                <rect x="136" y="84" width="12" height="16" fill="#0f172a" />
+                <rect x="68" y="104" width="16" height="8" fill="#0f172a" />
+                <rect x="92" y="104" width="8" height="16" fill="#0f172a" />
+                <rect x="108" y="104" width="24" height="8" fill="#0f172a" />
+                <rect x="68" y="120" width="8" height="16" fill="#0f172a" />
+                <rect x="84" y="128" width="16" height="8" fill="#0f172a" />
+                <rect x="108" y="120" width="16" height="16" fill="#0f172a" />
+                <rect x="132" y="120" width="16" height="8" fill="#0f172a" />
+                <rect x="68" y="140" width="24" height="8" fill="#0f172a" />
+                <rect x="100" y="140" width="16" height="8" fill="#0f172a" />
+                <rect x="124" y="136" width="24" height="12" fill="#0f172a" />
+              </svg>
+            </div>
+
+            <div class="font-monospace fw-bold mb-1" style="color: #0f172a; font-size: 14px;">
+              {{ ticket.ticket_code }}
+            </div>
+            <div style="color: #64748b; font-size: 12px;">
+              Tunjukkan QR ini kepada panitia saat check-in
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Footer (Figma 2002:797) -->
+        <div
+          class="p-4 d-flex justify-content-between align-items-center bg-white d-print-none"
+          style="border-top: 1px solid #e2e8f0;"
+        >
+          <router-link
+            to="/my-registrations"
+            class="btn px-3 py-2 fw-medium"
+            style="background-color: #ffffff; border: 1px solid #4f46e5; color: #4f46e5; border-radius: 4px; font-size: 14px;"
+          >
+            Kembali ke Riwayat
+          </router-link>
+
+          <button
+            type="button"
+            class="btn text-white fw-medium px-3 py-2"
+            style="background-color: #4f46e5; border: 1px solid #4f46e5; border-radius: 4px; font-size: 14px;"
+            @click="handleDownload"
+          >
+            Unduh Tiket
+          </button>
+        </div>
+      </div>
+
+      <div class="text-center mt-3" style="color: #64748b; font-size: 12px;">
+        EventHub Platform &copy; 2026. Tiket Digital Peserta.
+      </div>
+    </div>
+  </div>
+</template>
+
 <style scoped>
-.ticket-card {
-  border-radius: 1.25rem;
-}
-
-.ticket-header {
-  border-bottom: 2px dashed rgba(255, 255, 255, 0.4);
-}
-
-.ticket-stub {
-  background: #f8fafc;
-  border: 2px dashed #cbd5e1;
-}
-
-.tracking-wide {
-  letter-spacing: 0.1em;
-}
-
-.tracking-wider {
-  letter-spacing: 0.15em;
-}
-
-/* Simulasi Barcode CSS */
-.barcode-lines {
-  height: 48px;
-  background: repeating-linear-gradient(
-    90deg,
-    #0f172a 0px,
-    #0f172a 2px,
-    transparent 2px,
-    transparent 4px,
-    #0f172a 4px,
-    #0f172a 7px,
-    transparent 7px,
-    transparent 10px,
-    #0f172a 10px,
-    #0f172a 14px,
-    transparent 14px,
-    transparent 16px
-  );
-  width: 100%;
-}
-
-/* PRINT CSS OPTIMIZATION */
-@media print {
-  .no-print {
-    display: none !important;
-  }
-
-  body {
-    background: white !important;
-  }
-
-  .ticket-card {
-    border: 1px solid #000 !important;
-    box-shadow: none !important;
-  }
+.eh-ticket-card {
+  background-color: #ffffff;
+  border: 1px solid #c7d2fe;
+  border-radius: 8px;
 }
 </style>

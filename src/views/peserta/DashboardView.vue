@@ -1,114 +1,127 @@
+<script setup>
+import { ref } from 'vue'
+import { useAuthStore } from '../../stores/auth'
+
+const auth = useAuthStore()
+
+// Data Event Mendatang Saya sesuai Figma Mockup 2002:438
+const upcomingEvents = ref([
+  {
+    id: 1,
+    ticket_code: 'EVT-12-A8K2P9QX',
+    title: 'Seminar Nasional AI untuk Pendidikan',
+    schedule_location: '18 April 2026 • 09:00 WIB • Aula Gedung A, Kampus Pusat',
+    status: 'Terdaftar',
+  },
+  {
+    id: 2,
+    ticket_code: 'EVT-12-B3J7M1NW',
+    title: 'Workshop UI/UX dengan Figma',
+    schedule_location: '25 April 2026 • 13:00 WIB • Lab Komputer 2, Gedung FTI',
+    status: 'Terdaftar',
+  },
+  {
+    id: 3,
+    ticket_code: 'EVT-12-C9K4P2LR',
+    title: 'Open Recruitment Volunteer Techfest',
+    schedule_location: '12 Mei 2026 • 08:30 WIB • Auditorium Gedung D',
+    status: 'Terdaftar',
+  },
+])
+</script>
+
 <template>
-  <div class="peserta-dashboard py-4 pb-5">
-    <div class="container">
-      <!-- ===================================================================== -->
-      <!-- 1. WELCOME BANNER PESERTA                                             -->
-      <!-- ===================================================================== -->
-      <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 mb-4 bg-gradient-peserta text-white">
-        <div class="row align-items-center g-3">
-          <div class="col-md-8">
-            <span class="badge bg-white bg-opacity-25 px-3 py-1 rounded-pill small mb-2">
-              🎓 Area Peserta EventHub
-            </span>
-            <h1 class="h3 fw-bold mb-1">
-              Selamat Datang, {{ auth.userName || 'Peserta' }}! 👋
-            </h1>
-            <p class="opacity-90 small mb-0">
-              Pantau tiket digital aktif Anda, lihat jadwal acara kampus mendatang, dan temukan berbagai event menarik lainnya.
-            </p>
+  <div class="dashboard-peserta-mockup py-4">
+    <div class="container" style="max-width: 1280px;">
+      <!-- Greeting 'Halo, Aditya' (Figma 2002:460) -->
+      <div class="pb-4 mb-4" style="border-bottom: 1px solid #c7d2fe;">
+        <h1 class="fw-bold mb-1" style="color: #0f172a; font-size: 24px; letter-spacing: -0.6px;">
+          Halo, {{ auth.userName ? auth.userName.split(' ')[0] : 'Aditya' }}
+        </h1>
+        <p class="mb-0" style="color: #64748b; font-size: 14px;">
+          Pantau status keikutsertaan event kampus dan kelola tiket digital terverifikasi Anda.
+        </p>
+      </div>
+
+      <!-- 3 Summary Cards: white with 4px left bar alternating #4F46E5 and #7C3AED (Figma 2002:465) -->
+      <div class="row g-4 mb-4">
+        <div class="col-12 col-md-4">
+          <div class="stat-card stat-indigo p-4 h-100">
+            <div style="color: #64748b; font-size: 12px;">Event Terdaftar</div>
+            <div class="fw-bold my-1" style="color: #0f172a; font-size: 30px;">7</div>
+            <div style="color: #64748b; font-size: 12px;">Total seluruh pendaftaran aktif</div>
           </div>
-          <div class="col-md-4 text-md-end">
-            <router-link to="/" class="btn btn-light fw-bold px-4 py-2 rounded-pill shadow-sm">
-              🔍 Jelajahi Katalog Event
-            </router-link>
+        </div>
+
+        <div class="col-12 col-md-4">
+          <div class="stat-card stat-violet p-4 h-100">
+            <div style="color: #64748b; font-size: 12px;">Event Mendatang</div>
+            <div class="fw-bold my-1" style="color: #4f46e5; font-size: 30px;">3</div>
+            <div style="color: #64748b; font-size: 12px;">Tiket siap dipindai di lokasi</div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-4">
+          <div class="stat-card stat-indigo p-4 h-100">
+            <div style="color: #64748b; font-size: 12px;">Sudah Hadir</div>
+            <div class="fw-bold my-1" style="color: #22a55b; font-size: 30px;">4</div>
+            <div style="color: #64748b; font-size: 12px;">Presensi check-in selesai</div>
           </div>
         </div>
       </div>
 
-      <!-- ===================================================================== -->
-      <!-- 2. METRIK TIKET PESERTA                                               -->
-      <!-- ===================================================================== -->
-      <div class="row g-3 mb-4">
-        <div class="col-sm-4">
-          <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
-            <div class="d-flex align-items-center justify-content-between mb-2">
-              <span class="text-secondary small fw-semibold">Tiket Aktif</span>
-              <span class="fs-4">🎟️</span>
-            </div>
-            <div class="display-6 fw-bold text-primary">{{ activeTickets.length }}</div>
-            <small class="text-muted" style="font-size: 0.75rem;">Siap digunakan hari-H</small>
-          </div>
-        </div>
-
-        <div class="col-sm-4">
-          <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
-            <div class="d-flex align-items-center justify-content-between mb-2">
-              <span class="text-secondary small fw-semibold">Event Dihadiri</span>
-              <span class="fs-4">✅</span>
-            </div>
-            <div class="display-6 fw-bold text-success">1</div>
-            <small class="text-muted" style="font-size: 0.75rem;">Sudah presensi check-in</small>
-          </div>
-        </div>
-
-        <div class="col-sm-4">
-          <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
-            <div class="d-flex align-items-center justify-content-between mb-2">
-              <span class="text-secondary small fw-semibold">Total Pendaftaran</span>
-              <span class="fs-4">📑</span>
-            </div>
-            <div class="display-6 fw-bold text-dark">{{ activeTickets.length + 1 }}</div>
-            <small class="text-muted" style="font-size: 0.75rem;">Riwayat seluruh pendaftaran</small>
-          </div>
-        </div>
-      </div>
-
-      <!-- ===================================================================== -->
-      <!-- 3. TIKET DIGITAL AKTIF MENDATANG                                      -->
-      <!-- ===================================================================== -->
-      <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
-        <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
-          <div>
-            <h4 class="fw-bold text-dark mb-1">Tiket Masuk Aktif Anda</h4>
-            <p class="text-secondary small mb-0">Tunjukkan e-tiket ini kepada panitia saat check-in di lokasi acara.</p>
-          </div>
-          <router-link to="/my-registrations" class="btn btn-outline-primary btn-sm rounded-pill px-3">
-            Semua Riwayat Pendaftaran →
+      <!-- List 'Event Mendatang Saya' with 3 rows (Figma 2002:484) -->
+      <div class="eh-card overflow-hidden">
+        <div
+          class="p-3 px-4 d-flex justify-content-between align-items-center"
+          style="border-bottom: 1px solid #e2e8f0;"
+        >
+          <h2 class="fw-semibold mb-0" style="color: #0f172a; font-size: 16px;">
+            Event Mendatang Saya
+          </h2>
+          <router-link
+            to="/my-registrations"
+            class="text-decoration-none fw-semibold"
+            style="color: #4f46e5; font-size: 14px;"
+          >
+            Lihat Semua Riwayat
           </router-link>
         </div>
 
-        <div class="row g-4">
-          <div v-for="t in activeTickets" :key="t.id" class="col-12 col-md-6">
-            <div class="card border rounded-4 p-4 h-100 bg-light transition-all ticket-preview-card">
-              <div class="d-flex align-items-center justify-content-between mb-2">
-                <span class="badge bg-primary px-3 py-1 rounded-pill small">
-                  {{ t.category }}
-                </span>
-                <span class="badge bg-success-subtle text-success border border-success-subtle font-monospace small">
-                  ● SIAP DIGUNAKAN
-                </span>
-              </div>
-
-              <h5 class="fw-bold text-dark mb-2 line-clamp-2">{{ t.title }}</h5>
-
-              <div class="small text-secondary mb-3 d-flex flex-column gap-1">
-                <span>🗓️ {{ t.date }}</span>
-                <span>📍 {{ t.location }}</span>
-              </div>
-
-              <div class="p-3 bg-white rounded-3 border d-flex align-items-center justify-content-between mt-auto">
-                <div>
-                  <small class="text-muted d-block" style="font-size: 0.7rem;">KODE TIKET RESMI</small>
-                  <span class="fw-bold text-primary font-monospace fs-6">{{ t.ticket_code }}</span>
-                </div>
-                <router-link
-                  :to="`/my-registrations/${t.id}`"
-                  class="btn btn-primary btn-sm rounded-pill px-3 fw-bold"
+        <div>
+          <div
+            v-for="(item, idx) in upcomingEvents"
+            :key="item.id"
+            class="p-4 d-flex flex-wrap justify-content-between align-items-center gap-3"
+            :style="idx > 0 ? 'border-top: 1px solid #e2e8f0;' : ''"
+          >
+            <div>
+              <div class="d-flex align-items-center gap-2 mb-1">
+                <span
+                  class="badge rounded-pill text-white fw-semibold px-2 py-1"
+                  style="background-color: #22a55b; font-size: 12px;"
                 >
-                  Buka E-Tiket →
-                </router-link>
+                  {{ item.status }}
+                </span>
+                <span class="font-monospace" style="color: #64748b; font-size: 12px;">
+                  {{ item.ticket_code }}
+                </span>
+              </div>
+              <h3 class="fw-semibold mb-1" style="color: #0f172a; font-size: 16px;">
+                {{ item.title }}
+              </h3>
+              <div style="color: #64748b; font-size: 14px;">
+                {{ item.schedule_location }}
               </div>
             </div>
+
+            <router-link
+              :to="`/my-registrations/${item.id}`"
+              class="btn text-white fw-medium px-3 py-2"
+              style="background-color: #4f46e5; border-radius: 4px; font-size: 14px;"
+            >
+              Lihat Tiket
+            </router-link>
           </div>
         </div>
       </div>
@@ -116,38 +129,26 @@
   </div>
 </template>
 
-<script setup>
-import { ref } from 'vue'
-import { useAuthStore } from '../../stores/auth'
-
-const auth = useAuthStore()
-
-const activeTickets = ref([
-  {
-    id: 1,
-    title: 'Seminar Nasional Artificial Intelligence & Masa Depan Pendidikan',
-    category: 'Seminar',
-    date: '15 Des 2026, 09:00 WIB',
-    location: 'Auditorium Utama UNS, Surakarta',
-    ticket_code: 'EVT-1-K3M9QX2A',
-  },
-])
-</script>
-
 <style scoped>
-.bg-gradient-peserta {
-  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+.eh-card {
+  background-color: #ffffff;
+  border: 1px solid #c7d2fe;
+  border-radius: 8px;
 }
 
-.ticket-preview-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.06);
+.stat-card {
+  background-color: #ffffff;
+  border-top: 1px solid #c7d2fe;
+  border-right: 1px solid #c7d2fe;
+  border-bottom: 1px solid #c7d2fe;
+  border-radius: 8px;
 }
 
-.line-clamp-2 {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+.stat-indigo {
+  border-left: 4px solid #4f46e5;
+}
+
+.stat-violet {
+  border-left: 4px solid #7c3aed;
 }
 </style>
