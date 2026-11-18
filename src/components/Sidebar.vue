@@ -1,135 +1,187 @@
 <template>
   <!-- ======================================================================= -->
   <!-- 1. DESKTOP SIDEBAR (Tampil permanen pada layar >= 992px)               -->
+  <!--    Panitia: #1E1B4B | Developer: #0F172A | Active: #4F46E5             -->
   <!-- ======================================================================= -->
-  <aside class="sidebar-desktop d-none d-lg-flex flex-column flex-shrink-0 bg-dark text-white p-3 shadow">
-    <div class="d-flex flex-column h-100 justify-content-between">
-      <div>
-        <!-- Brand & Badge Peran Desktop -->
-        <div class="d-flex align-items-center gap-2 mb-4 px-2">
-          <span class="fs-4">🚀</span>
-          <div>
-            <div class="fw-bold fs-5 text-white lh-1">EventHub</div>
-            <small class="text-secondary text-uppercase tracking-wider" style="font-size: 0.7rem;">
-              Workspace Panel
-            </small>
-          </div>
+  <aside
+    class="sidebar-desktop d-none d-lg-flex flex-column flex-shrink-0 justify-content-between"
+    :class="auth.isDeveloper ? 'sidebar-developer' : 'sidebar-panitia'"
+  >
+    <div class="p-4">
+      <!-- Brand Header (Figma 2002:1783 / 2002:2360) -->
+      <router-link to="/" class="text-decoration-none d-flex align-items-center gap-2 mb-4">
+        <div
+          class="d-flex align-items-center justify-content-center fw-bold text-white flex-shrink-0"
+          style="width: 32px; height: 32px; background-color: #4f46e5; border-radius: 8px; font-size: 16px;"
+        >
+          EH
         </div>
+        <span class="fw-bold text-white" style="font-size: 17px; letter-spacing: -0.4px;">
+          EventHub
+        </span>
+        <span
+          v-if="auth.isDeveloper"
+          class="badge fw-bold ms-1"
+          style="background-color: #1e293b; border: 1px solid #334155; color: #94a3b8; font-size: 10px; letter-spacing: 0.5px;"
+        >
+          MOD
+        </span>
+      </router-link>
 
-        <div class="px-2 mb-3">
-          <span
-            class="badge text-uppercase px-2 py-1 small"
-            :class="auth.isPanitia ? 'bg-primary' : 'bg-success'"
-          >
-            ● Peran: {{ auth.role }}
-          </span>
-        </div>
-
-        <hr class="border-secondary my-2" />
-
-        <!-- Navigasi Menu Panitia -->
-        <template v-if="auth.isPanitia">
-          <div class="text-secondary small fw-bold text-uppercase px-2 my-2" style="font-size: 0.72rem;">
-            Menu Panitia
-          </div>
-          <ul class="nav nav-pills flex-column gap-1 mb-auto">
-            <li class="nav-item">
-              <router-link to="/organizer" exact class="nav-link text-white d-flex align-items-center gap-2 py-2 px-3 rounded-3">
-                <span>📊</span> <span>Dashboard</span>
-              </router-link>
-            </li>
-            <li class="nav-item">
-              <router-link to="/organizer/events" class="nav-link text-white d-flex align-items-center gap-2 py-2 px-3 rounded-3">
-                <span>📅</span> <span>Event Saya</span>
-              </router-link>
-            </li>
-            <li class="nav-item">
-              <router-link to="/organizer/events/create" class="nav-link text-white d-flex align-items-center gap-2 py-2 px-3 rounded-3">
-                <span>➕</span> <span>Buat Event Baru</span>
-              </router-link>
-            </li>
-            <li class="nav-item">
-              <router-link to="/organizer/check-in" class="nav-link text-white d-flex align-items-center gap-2 py-2 px-3 rounded-3">
-                <span>🎟️</span> <span>Presensi Check-In</span>
-              </router-link>
-            </li>
-          </ul>
-        </template>
-
-        <!-- Navigasi Menu Developer -->
-        <template v-if="auth.isDeveloper">
-          <div class="text-secondary small fw-bold text-uppercase px-2 my-2" style="font-size: 0.72rem;">
-            Menu Developer
-          </div>
-          <ul class="nav nav-pills flex-column gap-1 mb-auto">
-            <li class="nav-item">
-              <router-link to="/admin" exact class="nav-link text-white d-flex align-items-center gap-2 py-2 px-3 rounded-3">
-                <span>📊</span> <span>Dashboard Admin</span>
-              </router-link>
-            </li>
-            <li class="nav-item">
-              <router-link to="/admin/review" class="nav-link text-white d-flex align-items-center gap-2 py-2 px-3 rounded-3">
-                <span>📋</span> <span>Antrean Review</span>
-              </router-link>
-            </li>
-            <li class="nav-item">
-              <router-link to="/admin/payments" class="nav-link text-white d-flex align-items-center gap-2 py-2 px-3 rounded-3">
-                <span>💳</span> <span>Verifikasi Bayar</span>
-              </router-link>
-            </li>
-            <li class="nav-item">
-              <router-link to="/admin/categories" class="nav-link text-white d-flex align-items-center gap-2 py-2 px-3 rounded-3">
-                <span>🏷️</span> <span>Kelola Kategori</span>
-              </router-link>
-            </li>
-          </ul>
-        </template>
-
-        <hr class="border-secondary my-3" />
-
-        <!-- Tautan Luar -->
-        <div class="text-secondary small fw-bold text-uppercase px-2 mb-2" style="font-size: 0.72rem;">
-          Tautan Luar
-        </div>
-        <ul class="nav nav-pills flex-column gap-1">
+      <!-- Navigasi Menu Panitia (Figma 2002:4638) -->
+      <template v-if="auth.isPanitia">
+        <ul class="nav flex-column gap-1">
           <li class="nav-item">
-            <router-link to="/" class="nav-link text-white-50 d-flex align-items-center gap-2 py-2 px-3 rounded-3">
-              <span>🌐</span> <span>Katalog Publik</span>
+            <router-link
+              to="/organizer"
+              exact
+              class="eh-nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-2 text-decoration-none"
+            >
+              <i class="bi bi-grid-1x2"></i>
+              <span>Dashboard</span>
             </router-link>
           </li>
+          <li class="nav-item">
+            <router-link
+              to="/organizer/events"
+              class="eh-nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-2 text-decoration-none"
+            >
+              <i class="bi bi-calendar2-event"></i>
+              <span>Kelola Event</span>
+            </router-link>
+          </li>
+          <li class="nav-item">
+            <router-link
+              to="/organizer/check-in"
+              class="eh-nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-2 text-decoration-none"
+            >
+              <i class="bi bi-qr-code-scan"></i>
+              <span>Check-in</span>
+            </router-link>
+          </li>
+          <li class="nav-item mt-1">
+            <button
+              type="button"
+              class="eh-nav-link w-100 border-0 bg-transparent d-flex align-items-center gap-3 px-3 py-2 rounded-2 text-start"
+              @click="handleLogout"
+            >
+              <i class="bi bi-box-arrow-right"></i>
+              <span>Keluar</span>
+            </button>
+          </li>
         </ul>
-      </div>
+      </template>
 
-      <!-- Footer Profil & Logout Desktop -->
-      <div class="pt-3 border-top border-secondary">
-        <div class="d-flex align-items-center gap-2 text-truncate px-2 mb-2">
-          <span class="fs-5">👤</span>
-          <div class="text-truncate">
-            <div class="fw-semibold text-white small text-truncate">{{ auth.userName || 'Pengguna' }}</div>
-            <div class="text-secondary small text-truncate" style="font-size: 0.75rem;">{{ auth.user?.email }}</div>
+      <!-- Navigasi Menu Developer (Figma 2002:5248) -->
+      <template v-if="auth.isDeveloper">
+        <ul class="nav flex-column gap-1">
+          <li class="nav-item">
+            <router-link
+              to="/admin"
+              exact
+              class="eh-nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-2 text-decoration-none"
+            >
+              <i class="bi bi-grid-1x2"></i>
+              <span>Dashboard</span>
+            </router-link>
+          </li>
+          <li class="nav-item">
+            <router-link
+              to="/admin/review"
+              class="eh-nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-2 text-decoration-none"
+            >
+              <i class="bi bi-shield-check"></i>
+              <span>Antrean Moderasi</span>
+            </router-link>
+          </li>
+          <li class="nav-item">
+            <router-link
+              to="/admin/payments"
+              class="eh-nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-2 text-decoration-none"
+            >
+              <i class="bi bi-receipt"></i>
+              <span>Transaksi</span>
+            </router-link>
+          </li>
+          <li class="nav-item">
+            <router-link
+              to="/admin/categories"
+              class="eh-nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-2 text-decoration-none"
+            >
+              <i class="bi bi-tags"></i>
+              <span>Kategori dan Venue</span>
+            </router-link>
+          </li>
+          <li class="nav-item mt-1">
+            <button
+              type="button"
+              class="eh-nav-link w-100 border-0 bg-transparent d-flex align-items-center gap-3 px-3 py-2 rounded-2 text-start"
+              @click="handleLogout"
+            >
+              <i class="bi bi-box-arrow-right"></i>
+              <span>Keluar</span>
+            </button>
+          </li>
+        </ul>
+      </template>
+    </div>
+
+    <!-- Bottom Avatar Section (Figma 2002:1809 / 2002:2397) -->
+    <div
+      class="p-3"
+      :style="
+        auth.isDeveloper
+          ? 'border-top: 1px solid #1e293b;'
+          : 'border-top: 1px solid #312e81;'
+      "
+    >
+      <div class="d-flex align-items-center gap-3">
+        <div
+          class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white flex-shrink-0"
+          style="width: 40px; height: 40px; background-color: #312e81; font-size: 13px;"
+        >
+          {{ auth.isDeveloper ? 'DEV' : 'PB' }}
+        </div>
+        <div class="text-truncate">
+          <div class="fw-semibold text-white text-truncate" style="font-size: 14px;">
+            {{ auth.userName || (auth.isDeveloper ? 'Developer' : 'Panitia BEM') }}
+          </div>
+          <div
+            class="text-truncate"
+            :style="{ color: auth.isDeveloper ? '#94a3b8' : '#c7d2fe', fontSize: '12px' }"
+          >
+            {{ auth.isDeveloper ? 'Moderator Platform' : 'Penyelenggara Resmi' }}
           </div>
         </div>
-        <button class="btn btn-outline-danger btn-sm w-100 rounded-3 mt-1 py-1" @click="handleLogout">
-          🚪 Keluar Akun
-        </button>
       </div>
     </div>
   </aside>
 
   <!-- ======================================================================= -->
-  <!-- 2. MOBILE & TABLET OFFCANVAS (Menu geser untuk layar < 992px, Bab 9.2)  -->
+  <!-- 2. MOBILE & TABLET OFFCANVAS (Menu geser untuk layar < 992px)          -->
   <!-- ======================================================================= -->
   <div
-    class="offcanvas offcanvas-start bg-dark text-white d-lg-none"
+    class="offcanvas offcanvas-start text-white d-lg-none"
+    :class="auth.isDeveloper ? 'sidebar-developer' : 'sidebar-panitia'"
     tabindex="-1"
     id="dashboardSidebar"
     aria-labelledby="dashboardSidebarLabel"
-    style="width: 280px;"
+    style="width: 260px;"
   >
-    <div class="offcanvas-header border-bottom border-secondary pb-3">
+    <div
+      class="offcanvas-header pb-3"
+      :style="auth.isDeveloper ? 'border-bottom: 1px solid #1e293b;' : 'border-bottom: 1px solid #312e81;'"
+    >
       <div class="d-flex align-items-center gap-2">
-        <span class="fs-4">🚀</span>
-        <h5 class="offcanvas-title fw-bold text-white mb-0" id="dashboardSidebarLabel">EventHub</h5>
+        <div
+          class="d-flex align-items-center justify-content-center fw-bold text-white"
+          style="width: 32px; height: 32px; background-color: #4f46e5; border-radius: 8px; font-size: 15px;"
+        >
+          EH
+        </div>
+        <h5 class="offcanvas-title fw-bold text-white mb-0" id="dashboardSidebarLabel">
+          EventHub
+        </h5>
       </div>
       <button
         type="button"
@@ -141,99 +193,132 @@
 
     <div class="offcanvas-body p-3 d-flex flex-column justify-content-between">
       <div>
-        <div class="px-2 mb-3">
-          <span
-            class="badge text-uppercase px-2 py-1 small"
-            :class="auth.isPanitia ? 'bg-primary' : 'bg-success'"
-          >
-            ● Peran: {{ auth.role }}
-          </span>
-        </div>
-
-        <hr class="border-secondary my-2" />
-
         <!-- Menu Panitia Mobile -->
         <template v-if="auth.isPanitia">
-          <div class="text-secondary small fw-bold text-uppercase px-2 my-2" style="font-size: 0.72rem;">
-            Menu Panitia
-          </div>
-          <ul class="nav nav-pills flex-column gap-1 mb-auto">
+          <ul class="nav flex-column gap-1">
             <li class="nav-item">
-              <router-link to="/organizer" exact class="nav-link text-white d-flex align-items-center gap-2 py-2 px-3 rounded-3" @click="closeOffcanvas">
-                <span>📊</span> <span>Dashboard</span>
+              <router-link
+                to="/organizer"
+                exact
+                class="eh-nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-2 text-decoration-none"
+                @click="closeOffcanvas"
+              >
+                <i class="bi bi-grid-1x2"></i>
+                <span>Dashboard</span>
               </router-link>
             </li>
             <li class="nav-item">
-              <router-link to="/organizer/events" class="nav-link text-white d-flex align-items-center gap-2 py-2 px-3 rounded-3" @click="closeOffcanvas">
-                <span>📅</span> <span>Event Saya</span>
+              <router-link
+                to="/organizer/events"
+                class="eh-nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-2 text-decoration-none"
+                @click="closeOffcanvas"
+              >
+                <i class="bi bi-calendar2-event"></i>
+                <span>Kelola Event</span>
               </router-link>
             </li>
             <li class="nav-item">
-              <router-link to="/organizer/events/create" class="nav-link text-white d-flex align-items-center gap-2 py-2 px-3 rounded-3" @click="closeOffcanvas">
-                <span>➕</span> <span>Buat Event Baru</span>
+              <router-link
+                to="/organizer/check-in"
+                class="eh-nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-2 text-decoration-none"
+                @click="closeOffcanvas"
+              >
+                <i class="bi bi-qr-code-scan"></i>
+                <span>Check-in</span>
               </router-link>
             </li>
-            <li class="nav-item">
-              <router-link to="/organizer/check-in" class="nav-link text-white d-flex align-items-center gap-2 py-2 px-3 rounded-3" @click="closeOffcanvas">
-                <span>🎟️</span> <span>Presensi Check-In</span>
-              </router-link>
+            <li class="nav-item mt-1">
+              <button
+                type="button"
+                class="eh-nav-link w-100 border-0 bg-transparent d-flex align-items-center gap-3 px-3 py-2 rounded-2 text-start"
+                @click="handleLogout"
+              >
+                <i class="bi bi-box-arrow-right"></i>
+                <span>Keluar</span>
+              </button>
             </li>
           </ul>
         </template>
 
         <!-- Menu Developer Mobile -->
         <template v-if="auth.isDeveloper">
-          <div class="text-secondary small fw-bold text-uppercase px-2 my-2" style="font-size: 0.72rem;">
-            Menu Developer
-          </div>
-          <ul class="nav nav-pills flex-column gap-1 mb-auto">
+          <ul class="nav flex-column gap-1">
             <li class="nav-item">
-              <router-link to="/admin" exact class="nav-link text-white d-flex align-items-center gap-2 py-2 px-3 rounded-3" @click="closeOffcanvas">
-                <span>📊</span> <span>Dashboard Admin</span>
+              <router-link
+                to="/admin"
+                exact
+                class="eh-nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-2 text-decoration-none"
+                @click="closeOffcanvas"
+              >
+                <i class="bi bi-grid-1x2"></i>
+                <span>Dashboard</span>
               </router-link>
             </li>
             <li class="nav-item">
-              <router-link to="/admin/review" class="nav-link text-white d-flex align-items-center gap-2 py-2 px-3 rounded-3" @click="closeOffcanvas">
-                <span>📋</span> <span>Antrean Review</span>
+              <router-link
+                to="/admin/review"
+                class="eh-nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-2 text-decoration-none"
+                @click="closeOffcanvas"
+              >
+                <i class="bi bi-shield-check"></i>
+                <span>Antrean Moderasi</span>
               </router-link>
             </li>
             <li class="nav-item">
-              <router-link to="/admin/payments" class="nav-link text-white d-flex align-items-center gap-2 py-2 px-3 rounded-3" @click="closeOffcanvas">
-                <span>💳</span> <span>Verifikasi Bayar</span>
+              <router-link
+                to="/admin/payments"
+                class="eh-nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-2 text-decoration-none"
+                @click="closeOffcanvas"
+              >
+                <i class="bi bi-receipt"></i>
+                <span>Transaksi</span>
               </router-link>
             </li>
             <li class="nav-item">
-              <router-link to="/admin/categories" class="nav-link text-white d-flex align-items-center gap-2 py-2 px-3 rounded-3" @click="closeOffcanvas">
-                <span>🏷️</span> <span>Kelola Kategori</span>
+              <router-link
+                to="/admin/categories"
+                class="eh-nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-2 text-decoration-none"
+                @click="closeOffcanvas"
+              >
+                <i class="bi bi-tags"></i>
+                <span>Kategori dan Venue</span>
               </router-link>
+            </li>
+            <li class="nav-item mt-1">
+              <button
+                type="button"
+                class="eh-nav-link w-100 border-0 bg-transparent d-flex align-items-center gap-3 px-3 py-2 rounded-2 text-start"
+                @click="handleLogout"
+              >
+                <i class="bi bi-box-arrow-right"></i>
+                <span>Keluar</span>
+              </button>
             </li>
           </ul>
         </template>
-
-        <hr class="border-secondary my-3" />
-
-        <!-- Tautan Luar Mobile -->
-        <ul class="nav nav-pills flex-column gap-1">
-          <li class="nav-item">
-            <router-link to="/" class="nav-link text-white-50 d-flex align-items-center gap-2 py-2 px-3 rounded-3" @click="closeOffcanvas">
-              <span>🌐</span> <span>Katalog Publik</span>
-            </router-link>
-          </li>
-        </ul>
       </div>
 
-      <!-- Footer Profil & Logout Mobile -->
-      <div class="pt-3 border-top border-secondary">
-        <div class="d-flex align-items-center gap-2 text-truncate px-2 mb-2">
-          <span class="fs-5">👤</span>
+      <!-- Footer Profil Mobile -->
+      <div
+        class="pt-3"
+        :style="auth.isDeveloper ? 'border-top: 1px solid #1e293b;' : 'border-top: 1px solid #312e81;'"
+      >
+        <div class="d-flex align-items-center gap-2">
+          <div
+            class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white flex-shrink-0"
+            style="width: 36px; height: 36px; background-color: #312e81; font-size: 12px;"
+          >
+            {{ auth.isDeveloper ? 'DEV' : 'PB' }}
+          </div>
           <div class="text-truncate">
-            <div class="fw-semibold text-white small text-truncate">{{ auth.userName || 'Pengguna' }}</div>
-            <div class="text-secondary small text-truncate" style="font-size: 0.75rem;">{{ auth.user?.email }}</div>
+            <div class="fw-semibold text-white small text-truncate">
+              {{ auth.userName || (auth.isDeveloper ? 'Developer' : 'Panitia BEM') }}
+            </div>
+            <div class="small text-truncate" style="color: #c7d2fe; font-size: 11px;">
+              {{ auth.isDeveloper ? 'Moderator Platform' : 'Penyelenggara Resmi' }}
+            </div>
           </div>
         </div>
-        <button class="btn btn-outline-danger btn-sm w-100 rounded-3 mt-1 py-1" @click="handleLogout">
-          🚪 Keluar Akun
-        </button>
       </div>
     </div>
   </div>
@@ -248,9 +333,9 @@ const auth = useAuthStore()
 
 function closeOffcanvas() {
   const el = document.getElementById('dashboardSidebar')
-  if (el) {
-    const bsOffcanvas = window.bootstrap?.Offcanvas?.getInstance(el)
-    bsOffcanvas?.hide()
+  if (el && window.bootstrap) {
+    const instance = window.bootstrap.Offcanvas.getInstance(el)
+    if (instance) instance.hide()
   }
 }
 
@@ -263,26 +348,42 @@ async function handleLogout() {
 
 <style scoped>
 .sidebar-desktop {
-  width: 260px;
+  width: 256px;
   min-height: 100vh;
   position: sticky;
   top: 0;
-  z-index: 1020;
+  height: 100vh;
 }
 
-.nav-link {
-  transition: all 0.2s ease;
-  font-size: 0.92rem;
+.sidebar-panitia {
+  background-color: #1e1b4b !important;
+  border-right: 1px solid #1e1b4b;
 }
 
-.nav-link:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  color: #fff !important;
+.sidebar-developer {
+  background-color: #0f172a !important;
+  border-right: 1px solid #0f172a;
 }
 
-.nav-link.router-link-active {
-  background-color: #3b82f6 !important;
-  color: #fff !important;
+.eh-nav-link {
+  color: #c7d2fe;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.15s ease;
+}
+
+.sidebar-developer .eh-nav-link {
+  color: #cbd5e1;
+}
+
+.eh-nav-link:hover {
+  background-color: rgba(79, 70, 229, 0.25);
+  color: #ffffff;
+}
+
+.router-link-exact-active {
+  background-color: #4f46e5 !important;
+  color: #ffffff !important;
   font-weight: 600;
 }
 </style>

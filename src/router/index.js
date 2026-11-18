@@ -88,7 +88,7 @@ const routes = [
   {
     path: '/organizer/events/:id/payment',
     name: 'panitia.events.payment',
-    component: () => import('../views/panitia/DashboardView.vue'),
+    component: () => import('../views/panitia/EventPaymentView.vue'),
     meta: { requiresAuth: true, roles: ['panitia'] },
   },
   {
@@ -106,7 +106,7 @@ const routes = [
   {
     path: '/organizer/events/:id/report',
     name: 'panitia.events.report',
-    component: () => import('../views/panitia/DashboardView.vue'),
+    component: () => import('../views/panitia/EventRegistrationsView.vue'),
     meta: { requiresAuth: true, roles: ['panitia'] },
   },
 
@@ -128,7 +128,7 @@ const routes = [
   {
     path: '/admin/review/:id',
     name: 'developer.review.detail',
-    component: () => import('../views/developer/DashboardView.vue'),
+    component: () => import('../views/developer/ReviewDetailView.vue'),
     meta: { requiresAuth: true, roles: ['developer'] },
   },
   {
@@ -140,7 +140,7 @@ const routes = [
   {
     path: '/admin/categories',
     name: 'developer.categories',
-    component: () => import('../views/developer/DashboardView.vue'),
+    component: () => import('../views/developer/CategoriesView.vue'),
     meta: { requiresAuth: true, roles: ['developer'] },
   },
 

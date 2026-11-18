@@ -2,13 +2,13 @@
   <!-- ======================================================================= -->
   <!-- 1. TATA LETAK DASHBOARD (Khusus Panitia /organizer & Developer /admin)  -->
   <!-- ======================================================================= -->
-  <div v-if="isDashboardLayout" class="d-flex min-vh-100 bg-light">
+  <div v-if="isDashboardLayout" class="d-flex min-vh-100" style="background-color: #eef2ff;">
     <!-- Sidebar (Desktop statis + Mobile Offcanvas menu geser) -->
     <Sidebar />
 
     <!-- Konten Dashboard Kanan -->
     <div class="d-flex flex-column flex-grow-1 min-vw-0 overflow-hidden">
-      <!-- Topbar Header -->
+      <!-- Topbar Header (Tampil pada mobile/tablet & bar notifikasi) -->
       <DashboardHeader />
 
       <!-- Area Tampilan View Dashboard -->
@@ -21,7 +21,7 @@
   <!-- ======================================================================= -->
   <!-- 2. TATA LETAK PUBLIK / PESERTA (Katalog, Detail, Login, Register, Tiket)-->
   <!-- ======================================================================= -->
-  <div v-else class="d-flex flex-column min-vh-100">
+  <div v-else class="d-flex flex-column min-vh-100" style="background-color: #eef2ff;">
     <!-- Navbar Publik -->
     <Navbar />
 
@@ -30,22 +30,27 @@
       <RouterView />
     </main>
 
-    <!-- Footer Publik Ramah -->
-    <footer class="bg-dark text-white py-4 mt-auto border-top border-secondary">
+    <!-- Footer Publik -->
+    <footer class="py-4 mt-auto" style="background-color: #1e1b4b; border-top: 1px solid #312e81; color: #c7d2fe;">
       <div class="container text-center text-md-start">
         <div class="row g-3 align-items-center">
           <div class="col-md-6">
             <div class="d-flex align-items-center justify-content-center justify-content-md-start gap-2 mb-1">
-              <span class="fs-5">🚀</span>
-              <span class="fw-bold fs-5 text-white">EventHub</span>
+              <div
+                class="d-flex align-items-center justify-content-center fw-bold text-white"
+                style="width: 26px; height: 26px; background-color: #4f46e5; border-radius: 6px; font-size: 12px;"
+              >
+                EH
+              </div>
+              <span class="fw-bold text-white" style="font-size: 16px;">EventHub</span>
             </div>
-            <p class="small text-secondary mb-0">
-              Platform Sewa Penayangan dan Pendaftaran Event Kampus & Komunitas Terintegrasi.
+            <p class="small mb-0" style="color: #c7d2fe;">
+              Platform Sewa Penayangan dan Pendaftaran Event Kampus &amp; Komunitas Terintegrasi.
             </p>
           </div>
           <div class="col-md-6 text-center text-md-end">
-            <small class="text-secondary">
-              &copy; 2026 MPTI Kelompok 06 • UAS Rekayasa Perangkat Lunak
+            <small style="color: #c7d2fe;">
+              &copy; 2026 MPTI Kelompok 06 &bull; UAS Rekayasa Perangkat Lunak
             </small>
           </div>
         </div>
@@ -69,14 +74,6 @@ const isDashboardLayout = computed(() => {
   return path.startsWith('/organizer') || path.startsWith('/admin')
 })
 </script>
-
-<style>
-/* Styling Global Transisi */
-.transition-all {
-  transition: all 0.2s ease-in-out;
-}
-</style>
-
 
 <style>
 /* Styling Global Transisi */

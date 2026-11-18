@@ -802,3 +802,4 @@ const handleSubmit = async (proceedToPayment = false) => {
   box-shadow: 0 4px 12px rgba(13, 110, 253, 0.08);
 }
 </style>
+
